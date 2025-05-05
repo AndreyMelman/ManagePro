@@ -6,7 +6,7 @@ from fastapi.responses import ORJSONResponse
 
 from core.config import settings
 from core.models import db_helper
-
+from api import router as api_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,6 +20,8 @@ main_app = FastAPI(
     lifespan=lifespan,
     title="ManagePro",
 )
+
+main_app.include_router(api_router)
 
 
 @main_app.get("/")
