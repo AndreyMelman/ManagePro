@@ -5,11 +5,14 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from core.config import settings
+from core.models import db_helper
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
+
+    await db_helper.dispose()
 
 
 main_app = FastAPI(
