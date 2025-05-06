@@ -8,6 +8,7 @@ from core.config import settings
 from core.models import db_helper
 from api import router as api_router
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
