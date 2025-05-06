@@ -35,7 +35,6 @@ class ApiPrefix(BaseModel):
         # api/v1/auth/login
         parts = (self.prefix, self.v1.prefix, self.v1.auth, "/login")
         path = "".join(parts)
-        # return path[1:]
         return path.removeprefix("/")
 
 
