@@ -58,9 +58,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_constraint(
-        op.f("fk_users_team_id_teams"), "users", type_="foreignkey"
-    )
+    op.drop_constraint(op.f("fk_users_team_id_teams"), "users", type_="foreignkey")
     op.drop_column("users", "team_id")
     op.drop_table("teams")
-
