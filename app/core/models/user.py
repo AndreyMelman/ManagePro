@@ -4,8 +4,8 @@ from fastapi_users_db_sqlalchemy import (
     SQLAlchemyBaseUserTable,
     SQLAlchemyUserDatabase,
 )
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.types.user_id import UserIdType
 from core.types.role import UserRole
@@ -15,6 +15,7 @@ from .mixins.time_stamp import TimeStampMixin
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+    from core.models import Team
 
 
 class User(
@@ -28,6 +29,12 @@ class User(
         nullable=False,
         default=UserRole.USER,
     )
+
+    team_id: Mapped[int] = mapped_column(
+        ForeignKey("teams.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    team: Mapped["Team"] = relationship(back_populates="users")
 
     @classmethod
     def get_db(cls, session: "AsyncSession"):
