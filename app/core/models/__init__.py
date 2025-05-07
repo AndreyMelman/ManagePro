@@ -3,9 +3,11 @@ __all__ = (
     "Base",
     "User",
     "AccessToken",
+    "Team",
 )
 
 from .db_helper import db_helper
 from .base import Base
 from .user import User
 from .access_token import AccessToken
+from .team import Team
