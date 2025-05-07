@@ -8,13 +8,14 @@ from sqlalchemy.orm import (
 )
 
 from core.models import Base
+from core.models.mixins.id_int_pk import IdIntPkMixin
 
 if TYPE_CHECKING:
     from core.models import Meeting
     from core.models import User
 
 
-class MeetingParticipants(Base):
+class MeetingParticipant(Base, IdIntPkMixin):
     meeting_id: Mapped[int] = mapped_column(ForeignKey("meetings.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
