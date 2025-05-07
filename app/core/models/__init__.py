@@ -8,7 +8,7 @@ __all__ = (
     "TaskComment",
     "Evaluation",
     "Meeting",
-    "MeetingParticipants",
+    "MeetingParticipant",
 )
 
 from .db_helper import db_helper
@@ -20,4 +20,4 @@ from .task import Task
 from .task_comment import TaskComment
 from .evaluation import Evaluation
 from .meeting import Meeting
-from .meeting_participants import MeetingParticipants
+from .meeting_participant import MeetingParticipant

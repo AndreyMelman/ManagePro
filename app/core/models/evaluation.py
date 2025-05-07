@@ -28,7 +28,7 @@ class Evaluation(
 ):
     score: Mapped[int] = mapped_column(
         Integer,
-        CheckConstraint("score >= 1 AND score <= 5"),
+        CheckConstraint("score >= 1 AND score <= 5", name="check_score_positive"),
     )
     comment: Mapped[str | None] = mapped_column(String, default=None)
 
