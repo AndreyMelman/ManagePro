@@ -22,7 +22,3 @@ class UserUpdate(schemas.BaseUserUpdate):
 
 class UpdateRoleRequest(BaseModel):
     role: Annotated[UserRole, Depends()]
-
-
-class SuperUserCreate(UserCreate):
-    role: Annotated[UserRole, Depends()]
