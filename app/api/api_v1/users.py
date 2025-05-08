@@ -1,18 +1,17 @@
-from fastapi import (
-    APIRouter,
-    HTTPException,
-    status,
-)
+from typing import Annotated
+
+from fastapi import APIRouter, Path
 
 from api.api_v1.fastapi_users import fastapi_users
-from api.dependencies.params import Admin, SessionDep
+from api.dependencies.params import UserServiceDep, CurrentActiveSuperUser
 from core.config import settings
-from core.models import User, db_helper
+
 from core.schemas.user import (
     UserRead,
     UserUpdate,
     UpdateRoleRequest,
 )
+from core.types.role import UserRole
 
 from core.types.user_id import UserIdType
 
@@ -34,25 +33,13 @@ router.include_router(
 
 @router.patch("/{user_id}/role")
 async def update_user_role(
-    session: SessionDep,
-    user_id: UserIdType,
+    crud: UserServiceDep,
+    user_id: Annotated[UserIdType, Path()],
     role_data: UpdateRoleRequest,
-    admin: Admin,
-) -> None:
-    user = await session.get(User, user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-
-    # Проверяем, что суперпользователь не пытается изменить свою роль
-    if user.id == admin.id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Superuser cannot change their own role",
-        )
-
-    # Обновляем роль
-    user.role = role_data.role
-    await session.commit()
+    admin: CurrentActiveSuperUser,
+):
+    return await crud.update_user_role(
+        user_id=user_id,
+        role_data=role_data,
+        current_user=admin,
+    )
