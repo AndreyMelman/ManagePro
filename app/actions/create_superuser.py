@@ -10,18 +10,20 @@ from core.models import (
     User,
 )
 
-from core.schemas.user import UserCreate, SuperUserCreate
-from core.types.role import UserRole
+from core.schemas.user import UserCreate
 
+# from fastapi_users.exceptions import UserAlreadyExists
+
+# get_async_session_context = contextlib.asynccontextmanager(get_async_session)
 get_users_db_context = contextlib.asynccontextmanager(get_users_db)
 get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
 
+
 default_email = getenv("DEFAULT_EMAIL", "admin@admin.com")
-default_password = getenv("DEFAULT_PASSWORD", "1111")
+default_password = getenv("DEFAULT_PASSWORD", "1234")
 default_is_active = True
 default_is_superuser = True
 default_is_verified = True
-default_is_role = UserRole.ADMIN
 
 
 async def create_user(
@@ -41,15 +43,13 @@ async def create_superuser(
     is_active: bool = default_is_active,
     is_superuser: bool = default_is_superuser,
     is_verified: bool = default_is_verified,
-    role=default_is_role,
 ):
-    user_create = SuperUserCreate(
+    user_create = UserCreate(
         email=email,
         password=password,
         is_active=is_active,
         is_superuser=is_superuser,
         is_verified=is_verified,
-        role=role,
     )
     async with db_helper.session_factory() as session:
         async with get_users_db_context(session) as users_db:
