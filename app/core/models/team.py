@@ -34,6 +34,7 @@ class Team(
     users: Mapped[list["User"]] = relationship(
         back_populates="team",
         passive_deletes=True,
+        foreign_keys="[User.team_id]",
     )
 
     tasks: Mapped[list["Task"]] = relationship(

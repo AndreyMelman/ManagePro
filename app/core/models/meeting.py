@@ -22,6 +22,7 @@ from core.models.mixins.time_stamp import TimeStampMixin
 if TYPE_CHECKING:
     from core.models import Team
     from core.models import User
+    from core.models import MeetingParticipant
 
 
 class Meeting(
@@ -40,7 +41,7 @@ class Meeting(
 
     organizer: Mapped["User"] = relationship(back_populates="organized_meetings")
     team: Mapped["Team"] = relationship(back_populates="meetings")
-    participants: Mapped[list["User"]] = relationship(
-        secondary="meeting_participants",
-        back_populates="meetings",
+    participants: Mapped[list["MeetingParticipant"]] = relationship(
+        back_populates="meeting",
+        cascade="all, delete-orphan",
     )

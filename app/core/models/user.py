@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from core.models import TaskComment
     from core.models import Evaluation
     from core.models import Meeting
+    from core.models import MeetingParticipant
 
 
 class User(
@@ -41,12 +42,15 @@ class User(
         default=UserRole.USER,
     )
 
-    team_id: Mapped[int] = mapped_column(
+    team_id: Mapped[int | None] = mapped_column(
         ForeignKey("teams.id", ondelete="SET NULL"),
         nullable=True,
     )
 
-    team: Mapped["Team"] = relationship(back_populates="users")
+    team: Mapped["Team"] = relationship(
+        back_populates="users",
+        foreign_keys=[team_id],
+    )
     user_comments: Mapped[list["TaskComment"]] = relationship(back_populates="user")
     created_tasks: Mapped[list["Task"]] = relationship(
         back_populates="creator",
@@ -67,9 +71,8 @@ class User(
     organized_meetings: Mapped[list["Meeting"]] = relationship(
         back_populates="organizer",
     )
-    meetings: Mapped[list["Meeting"]] = relationship(
-        secondary="meeting_participants",
-        back_populates="participants",
+    meetings: Mapped[list["MeetingParticipant"]] = relationship(
+        back_populates="user",
     )
 
     @classmethod
