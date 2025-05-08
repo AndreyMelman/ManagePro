@@ -30,3 +30,7 @@ async def get_user_with_role(
 
 async def get_manager(user: User = Depends(current_active_user)) -> User:
     return await get_user_with_role(UserRole.MANAGER, user)
+
+
+async def get_admin(user: User = Depends(current_active_user)) -> User:
+    return await get_user_with_role(UserRole.ADMIN, user)
