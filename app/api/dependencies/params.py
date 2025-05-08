@@ -1,19 +1,21 @@
 from typing import Annotated
 
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_v1.fastapi_users import (
     current_active_user,
     get_manager,
+    get_admin,
     current_active_superuser,
 )
-from core.models import (
-    User,
-    db_helper,
-)
+from api.dependencies.dependencies import make_crud_dependency
+from core.models import User
+from crud.teams import TeamService
+from crud.users import UserService
 
-SessionDep = Annotated[AsyncSession, Depends(db_helper.session_getter)]
+TeamServiceDep = Annotated[TeamService, Depends(make_crud_dependency(TeamService))]
+UserServiceDep = Annotated[UserService, Depends(make_crud_dependency(UserService))]
 CurrentActiveUser = Annotated[User, Depends(current_active_user)]
-Manager = Annotated[User, Depends(get_manager)]
-Admin = Annotated[User, Depends(current_active_superuser)]
+CurrentActiveManager = Annotated[User, Depends(get_manager)]
+CurrentActiveAdmin = Annotated[User, Depends(get_admin)]
+CurrentActiveSuperUser = Annotated[User, Depends(current_active_superuser)]
