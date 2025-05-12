@@ -6,52 +6,80 @@ from api.dependencies.params import (
     CurrentActiveUser,
 )
 from core.schemas.team import TeamCreateSchema, TeamSchema
-from core.schemas.user import UserCreate, UserRead
-from crud import teams
 
-router = APIRouter(tags=["Teams"])
-
-
-@router.get(
-    "/",
+from api.docs.teams import (
+    TEAM_TAG,
+    GET_TEAM_WITH_USERS,
+    CREATE_TEAM,
+    ADD_USER_TO_TEAM,
+    REMOVE_USER_FROM_TEAM,
 )
+
+router = APIRouter(tags=[TEAM_TAG])
+
+
+@router.get("/", **GET_TEAM_WITH_USERS)
 async def get_team_with_users(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
     team_id: int,
 ):
+    """
+    Получить состав команды.
+
+    Args:
+        crud: Сервис для работы с командами
+        user: Текущий пользователь
+        team_id: ID команды
+
+    Returns:
+        list[TeamSchema]: Список с одной командой и её пользователями
+    """
     return await crud.get_team_with_users(
         team_id=team_id,
         current_user=user,
     )
 
 
-@router.post(
-    "",
-    response_model=TeamSchema,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("", **CREATE_TEAM)
 async def create_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
     team_in: TeamCreateSchema,
 ):
+    """
+    Создать новую команду.
+
+    Args:
+        crud: Сервис для работы с командами
+        user: Текущий пользователь
+        team_in: Данные для создания команды
+
+    Returns:
+        TeamSchema: Созданная команда
+    """
     return await crud.create_team(
         user=user,
         team_in=team_in,
     )
 
 
-@router.post(
-    "/{team_id}/user/{user_id}",
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/{team_id}/user/{user_id}", **ADD_USER_TO_TEAM)
 async def add_user_to_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
     team_id: int,
     user_id: int,
 ):
+    """
+    Добавить пользователя в команду.
+
+    Args:
+        crud: Сервис для работы с командами
+        user: Текущий пользователь
+        team_id: ID команды
+        user_id: ID пользователя
+    """
     return await crud.add_user_to_team(
         current_user=user,
         team_id=team_id,
@@ -59,16 +87,22 @@ async def add_user_to_team(
     )
 
 
-@router.delete(
-    "/{team_id}/user/{user_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete("/{team_id}/user/{user_id}", **REMOVE_USER_FROM_TEAM)
 async def remove_user_from_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
     team_id: int,
     user_id: int,
 ):
+    """
+    Удалить пользователя из команды.
+
+    Args:
+        crud: Сервис для работы с командами
+        user: Текущий пользователь
+        team_id: ID команды
+        user_id: ID пользователя
+    """
     return await crud.remove_user_from_team(
         current_user=user,
         team_id=team_id,
