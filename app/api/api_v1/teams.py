@@ -1,9 +1,10 @@
-from fastapi import APIRouter, status
+from typing import Annotated
+
+from fastapi import APIRouter, Path
 
 from api.dependencies.params import (
     TeamServiceDep,
     CurrentActiveAdmin,
-    CurrentActiveUser,
 )
 from core.schemas.team import TeamCreateSchema, TeamSchema
 
@@ -19,6 +20,8 @@ from core.schemas.user import UpdateRoleRequest
 
 router = APIRouter(tags=[TEAM_TAG])
 
+TeamID = Annotated[int, Path()]
+UserID = Annotated[int, Path()]
 
 @router.get(
     "/",
@@ -27,7 +30,7 @@ router = APIRouter(tags=[TEAM_TAG])
 async def get_team_with_users(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
-    team_id: int,
+    team_id: TeamID,
 ):
     """
     Получить состав команды.
@@ -76,8 +79,8 @@ async def create_team(
 async def add_user_to_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
-    team_id: int,
-    user_id: int,
+    team_id: TeamID,
+    user_id: UserID,
 ):
     """
     Добавить пользователя в команду.
@@ -103,8 +106,8 @@ async def update_user_team_role(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
     role_data: UpdateRoleRequest,
-    team_id: int,
-    user_id: int,
+    team_id: TeamID,
+    user_id: UserID,
 ):
     """
     Добавить роль пользователю в команде.
@@ -131,8 +134,8 @@ async def update_user_team_role(
 async def remove_user_from_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
-    team_id: int,
-    user_id: int,
+    team_id: TeamID,
+    user_id: UserID,
 ):
     """
     Удалить пользователя из команды.
