@@ -23,8 +23,9 @@ router = APIRouter(tags=[TEAM_TAG])
 TeamID = Annotated[int, Path()]
 UserID = Annotated[int, Path()]
 
+
 @router.get(
-    "/",
+    "/{team_id}",
     **GET_TEAM_WITH_USERS,
 )
 async def get_team_with_users(
