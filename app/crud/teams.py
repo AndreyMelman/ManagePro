@@ -13,7 +13,8 @@ from core.exceptions.team import (
     UserAlreadyInTeamError,
     UserNotInTeamError,
     CannotRemoveTeamAdminError,
-    TeamCodeExistsError, CannotAddTeamAdmin,
+    TeamCodeExistsError,
+    CannotAddTeamAdmin,
 )
 from core.schemas.user import UpdateRoleRequest
 
@@ -148,7 +149,6 @@ class TeamService:
         user.team_id = team_id
         await self.session.commit()
 
-
     async def update_user_team_role(
         self,
         user_id: int,
@@ -187,7 +187,6 @@ class TeamService:
 
         user.role = role_data.role
         await self.session.commit()
-
 
     async def remove_user_from_team(
         self,
@@ -253,4 +252,3 @@ class TeamService:
             raise TeamNotFoundError()
 
         return team
-
