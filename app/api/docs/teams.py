@@ -9,7 +9,6 @@ TEAM_PREFIX = "/teams"
 
 # Документация для получения состава команды
 GET_TEAM_WITH_USERS = {
-    "response_model": list[TeamSchema],
     "summary": "Получить состав команды",
     "description": """
     Получить информацию о команде и её составе.
@@ -22,22 +21,20 @@ GET_TEAM_WITH_USERS = {
             "description": "Успешное получение состава команды",
             "content": {
                 "application/json": {
-                    "example": [
-                        {
-                            "id": 1,
-                            "name": "Команда разработки",
-                            "code": "DEV",
-                            "admin_id": 1,
-                            "users": [
-                                {
-                                    "id": 1,
-                                    "email": "admin@example.com",
-                                    "role": "admin",
-                                },
-                                {"id": 2, "email": "user@example.com", "role": "user"},
-                            ],
-                        }
-                    ]
+                    "example": {
+                        "id": 1,
+                        "name": "Команда разработки",
+                        "code": "DEV",
+                        "admin_id": 1,
+                        "users": [
+                            {
+                                "id": 1,
+                                "email": "admin@example.com",
+                                "role": "admin",
+                            },
+                            {"id": 2, "email": "user@example.com", "role": "user"},
+                        ],
+                    }
                 }
             },
         },
