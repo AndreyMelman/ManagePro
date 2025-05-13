@@ -13,12 +13,14 @@ from api.docs.teams import (
     CREATE_TEAM,
     ADD_USER_TO_TEAM,
     REMOVE_USER_FROM_TEAM,
+    UPDATE_ROLE_FROM_USER,
 )
+from core.schemas.user import UpdateRoleRequest
 
 router = APIRouter(tags=[TEAM_TAG])
 
 
-@router.get("/", **GET_TEAM_WITH_USERS)
+@router.get("/", **GET_TEAM_WITH_USERS,)
 async def get_team_with_users(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
@@ -41,7 +43,7 @@ async def get_team_with_users(
     )
 
 
-@router.post("", **CREATE_TEAM)
+@router.post("", **CREATE_TEAM,)
 async def create_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
@@ -87,7 +89,32 @@ async def add_user_to_team(
     )
 
 
-@router.delete("/{team_id}/user/{user_id}", **REMOVE_USER_FROM_TEAM)
+@router.patch("/{team_id}/user/{user_id}/role", **UPDATE_ROLE_FROM_USER,)
+async def update_user_team_role(
+    crud: TeamServiceDep,
+    user: CurrentActiveAdmin,
+    role_data: UpdateRoleRequest,
+    team_id: int,
+    user_id: int,
+):
+    """
+    Добавить роль пользователю в команде.
+
+    Args:
+        crud: Сервис для работы с командами
+        user: Текущий пользователь
+        role_data: Данные для обновления роли
+        team_id: ID команды
+        user_id: ID пользователя
+    """
+    return await crud.update_user_team_role(
+        team_id=team_id,
+        user_id=user_id,
+        current_user=user,
+        role_data=role_data,
+    )
+
+@router.delete("/{team_id}/user/{user_id}", **REMOVE_USER_FROM_TEAM,)
 async def remove_user_from_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
