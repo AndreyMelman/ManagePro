@@ -13,8 +13,9 @@ from core.exceptions.team import (
     UserAlreadyInTeamError,
     UserNotInTeamError,
     CannotRemoveTeamAdminError,
-    TeamCodeExistsError,
+    TeamCodeExistsError, CannotAddTeamAdmin,
 )
+from core.schemas.user import UpdateRoleRequest
 
 
 class TeamService:
@@ -73,7 +74,7 @@ class TeamService:
 
         Args:
             team: Объект команды
-            current_user: Текущий пользователь
+            current_user: Текущий администратор команды
 
         Raises:
             TeamAdminRequiredError: Если пользователь не является администратором команды
@@ -129,7 +130,7 @@ class TeamService:
         Args:
             team_id: ID команды
             user_id: ID пользователя
-            current_user: Текущий пользователь (должен быть администратором команды)
+            current_user: Текущий администратор команды
 
         Raises:
             TeamNotFoundError: Если команда не найдена
@@ -147,6 +148,47 @@ class TeamService:
         user.team_id = team_id
         await self.session.commit()
 
+
+    async def update_user_team_role(
+        self,
+        user_id: int,
+        team_id: int,
+        current_user: User,
+        role_data: UpdateRoleRequest,
+    ) -> None:
+        """
+        Назначение ролей (менеджер, сотрудник)
+
+        Args:
+            team_id: ID команды
+            user_id: ID пользователя
+            current_user: Текущий администратор команды
+            role_data: Данные для обновления роли
+
+        Returns:
+            None
+
+        Raises:
+            TeamNotFoundError: Если команда не найдена
+            UserNotFoundError: Если пользователь не найден
+            TeamAdminRequiredError: Если текущий пользователь не является администратором команды
+            UserNotInTeamError: Если пользователь не состоит в команде
+            CannotAddTeamAdmin: Если пытаемся назначить администратора
+        """
+        team = await self._get_team(team_id)
+        user = await self._get_user(user_id)
+        await self._check_team_admin(team, current_user)
+
+        if user.team_id != team_id:
+            raise UserNotInTeamError()
+
+        if role_data.role == "admin":
+            raise CannotAddTeamAdmin()
+
+        user.role = role_data.role
+        await self.session.commit()
+
+
     async def remove_user_from_team(
         self,
         team_id: int,
@@ -159,7 +201,7 @@ class TeamService:
         Args:
             team_id: ID команды
             user_id: ID пользователя
-            current_user: Текущий пользователь (должен быть администратором команды)
+            current_user: Текущий администратор команды
 
         Raises:
             TeamNotFoundError: Если команда не найдена
@@ -191,7 +233,7 @@ class TeamService:
 
         Args:
             team_id: ID команды
-            current_user: Текущий пользователь
+            current_user: Текущий администратор команды
 
         Returns:
             Team: Команда с загруженными пользователями
@@ -211,3 +253,4 @@ class TeamService:
             raise TeamNotFoundError()
 
         return team
+
