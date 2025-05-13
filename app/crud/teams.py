@@ -25,6 +25,18 @@ class TeamService:
         self,
         team_id: int,
     ) -> type[Team]:
+        """
+        Получить команду по ID.
+
+        Args:
+            team_id: ID команды
+
+        Returns:
+            Team: Объект команды
+
+        Raises:
+            TeamNotFoundError: Если команда не найдена
+        """
         team = await self.session.get(Team, team_id)
         if not team:
             raise TeamNotFoundError()
@@ -34,6 +46,18 @@ class TeamService:
         self,
         user_id: int,
     ) -> type[User]:
+        """
+        Получить пользователя по ID.
+
+        Args:
+            user_id: ID пользователя
+
+        Returns:
+            User: Объект пользователя
+
+        Raises:
+            UserNotFoundError: Если пользователь не найден
+        """
         user = await self.session.get(User, user_id)
         if not user:
             raise UserNotFoundError()
@@ -44,6 +68,16 @@ class TeamService:
         team: Team,
         current_user: User,
     ) -> None:
+        """
+        Проверить, является ли пользователь администратором команды.
+
+        Args:
+            team: Объект команды
+            current_user: Текущий пользователь
+
+        Raises:
+            TeamAdminRequiredError: Если пользователь не является администратором команды
+        """
         if team.admin_id != current_user.id:
             raise TeamAdminRequiredError(team.name)
 
@@ -52,6 +86,20 @@ class TeamService:
         team_in: TeamCreateSchema,
         user: User,
     ) -> Team:
+        """
+        Создать новую команду.
+
+        Args:
+            team_in: Данные для создания команды
+            user: Пользователь, создающий команду
+
+        Returns:
+            Team: Созданная команда
+
+        Raises:
+            UserAlreadyInTeamError: Если пользователь уже состоит в команде
+            TeamCodeExistsError: Если код команды уже существует
+        """
         if user.team_id is not None:
             raise UserAlreadyInTeamError(user.id)
 
@@ -75,6 +123,20 @@ class TeamService:
         user_id: int,
         current_user: User,
     ) -> None:
+        """
+        Добавить пользователя в команду.
+
+        Args:
+            team_id: ID команды
+            user_id: ID пользователя
+            current_user: Текущий пользователь (должен быть администратором команды)
+
+        Raises:
+            TeamNotFoundError: Если команда не найдена
+            UserNotFoundError: Если пользователь не найден
+            TeamAdminRequiredError: Если текущий пользователь не является администратором команды
+            UserAlreadyInTeamError: Если пользователь уже состоит в команде
+        """
         team = await self._get_team(team_id)
         user = await self._get_user(user_id)
         await self._check_team_admin(team, current_user)
@@ -91,6 +153,21 @@ class TeamService:
         user_id: int,
         current_user: User,
     ) -> None:
+        """
+        Удалить пользователя из команды.
+
+        Args:
+            team_id: ID команды
+            user_id: ID пользователя
+            current_user: Текущий пользователь (должен быть администратором команды)
+
+        Raises:
+            TeamNotFoundError: Если команда не найдена
+            UserNotFoundError: Если пользователь не найден
+            TeamAdminRequiredError: Если текущий пользователь не является администратором команды
+            UserNotInTeamError: Если пользователь не состоит в команде
+            CannotRemoveTeamAdminError: Если пытаемся удалить администратора команды
+        """
         team = await self._get_team(team_id)
         user = await self._get_user(user_id)
         await self._check_team_admin(team, current_user)
