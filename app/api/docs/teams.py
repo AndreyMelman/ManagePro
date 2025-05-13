@@ -1,6 +1,7 @@
 from fastapi import status
 
-from core.schemas.team import TeamSchema
+from core.schemas.team import TeamSchema, TeamUpdateSchema
+from core.schemas.user import UpdateRoleRequest, UserUpdate
 
 # Общие описания
 TEAM_TAG = "Teams"
@@ -109,4 +110,20 @@ REMOVE_USER_FROM_TEAM = {
         403: {"description": "Нет прав для удаления пользователя"},
         404: {"description": "Команда или пользователь не найдены"},
     },
+}
+
+UPDATE_ROLE_FROM_USER = {
+    "summary": "Изменить пользователю роль",
+    "description": """
+    Добавить пользователю роль.
+    
+    - Требует прав администратора
+    - Изменение роли пользователей (менажер или сотрудник)
+    """,
+    "responses": {
+        200: {"description": "роль пользователя изменена"},
+        400: {"description": "Нельзя удалить админа команды"},
+        403: {"description": "Нет прав для изменения роли пользователя"},
+        404: {"description": "Команда или пользователь не найдены"},
+}
 }
