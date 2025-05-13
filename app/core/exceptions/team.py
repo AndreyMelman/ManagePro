@@ -69,5 +69,5 @@ class CannotAddTeamAdmin(HTTPException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Администратор команды может назначать только менажера и сотрудника"
+            detail=f"Администратор команды может назначать только менажера и сотрудника",
         )
