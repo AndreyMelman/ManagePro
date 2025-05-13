@@ -1,6 +1,9 @@
-from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.exceptions.user import (
+    UserNotFoundError,
+    UserCannotChangeRole,
+)
 from core.models import User
 from core.schemas.user import UpdateRoleRequest
 
@@ -18,16 +21,10 @@ class UserService:
         user = await self.session.get(User, user_id)
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
+            raise UserNotFoundError()
 
         if user.id == current_user.id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Superuser cannot change their own role",
-            )
+            raise UserCannotChangeRole()
 
         user.role = role_data.role
         await self.session.commit()
