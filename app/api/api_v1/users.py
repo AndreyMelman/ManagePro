@@ -11,7 +11,6 @@ from core.schemas.user import (
     UserUpdate,
     UpdateRoleRequest,
 )
-from core.types.role import UserRole
 
 from core.types.user_id import UserIdType
 
@@ -38,6 +37,18 @@ async def update_user_role(
     role_data: UpdateRoleRequest,
     admin: CurrentActiveSuperUser,
 ):
+    """
+    Изменение роли пользователя
+
+    Args:
+        crud: Сервис для работы с командами
+        user_id: Текущий пользователь
+        role_data:
+        admin: Данные для создания команды
+
+    Returns:
+        Новая роль у пользователя
+    """
     return await crud.update_user_role(
         user_id=user_id,
         role_data=role_data,

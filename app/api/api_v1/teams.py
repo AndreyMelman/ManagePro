@@ -20,7 +20,10 @@ from core.schemas.user import UpdateRoleRequest
 router = APIRouter(tags=[TEAM_TAG])
 
 
-@router.get("/", **GET_TEAM_WITH_USERS,)
+@router.get(
+    "/",
+    **GET_TEAM_WITH_USERS,
+)
 async def get_team_with_users(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
@@ -43,7 +46,10 @@ async def get_team_with_users(
     )
 
 
-@router.post("", **CREATE_TEAM,)
+@router.post(
+    "",
+    **CREATE_TEAM,
+)
 async def create_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
@@ -89,7 +95,10 @@ async def add_user_to_team(
     )
 
 
-@router.patch("/{team_id}/user/{user_id}/role", **UPDATE_ROLE_FROM_USER,)
+@router.patch(
+    "/{team_id}/user/{user_id}/role",
+    **UPDATE_ROLE_FROM_USER,
+)
 async def update_user_team_role(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
@@ -114,7 +123,11 @@ async def update_user_team_role(
         role_data=role_data,
     )
 
-@router.delete("/{team_id}/user/{user_id}", **REMOVE_USER_FROM_TEAM,)
+
+@router.delete(
+    "/{team_id}/user/{user_id}",
+    **REMOVE_USER_FROM_TEAM,
+)
 async def remove_user_from_team(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
