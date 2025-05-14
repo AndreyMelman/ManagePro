@@ -7,6 +7,7 @@ from fastapi.responses import ORJSONResponse
 from core.config import settings
 from core.models import db_helper
 from api import router as api_router
+from errors_handlers import register_errors_handlers
 
 
 @asynccontextmanager
@@ -23,6 +24,7 @@ main_app = FastAPI(
 )
 
 main_app.include_router(api_router)
+register_errors_handlers(main_app)
 
 
 @main_app.get("/")
