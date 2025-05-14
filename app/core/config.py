@@ -1,3 +1,4 @@
+import logging
 from typing import Literal
 
 from pydantic import (
@@ -17,6 +18,21 @@ LOG_DEFAULT_FORMAT = (
 class RunConfig(BaseModel):
     host: str = "localhost"
     port: int = 8000
+
+
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
+    ] = "info"
+    log_format: str = LOG_DEFAULT_FORMAT
+
+    @property
+    def log_level_value(self) -> int:
+        return logging.getLevelNamesMapping()[self.log_level.upper()]
 
 
 class ApiV1Prefix(BaseModel):
@@ -74,6 +90,7 @@ class Settings(BaseSettings):
     db: DatabaseConfig
     api: ApiPrefix = ApiPrefix()
     access_token: AccessToken
+    logging: LoggingConfig = LoggingConfig()
 
 
 settings = Settings()
