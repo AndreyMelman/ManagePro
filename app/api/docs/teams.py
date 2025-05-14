@@ -6,6 +6,7 @@ from core.schemas.user import UpdateRoleRequest, UserUpdate
 # Общие описания
 TEAM_TAG = "Teams"
 TEAM_PREFIX = "/teams"
+TASK_TAG = "Tasks"
 
 # Документация для получения состава команды
 GET_TEAM_WITH_USERS = {
