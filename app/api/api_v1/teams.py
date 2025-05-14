@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Path, Query
 
 from api.dependencies.params import (
     TeamServiceDep,
@@ -17,11 +17,13 @@ from api.docs.teams import (
     UPDATE_ROLE_FROM_USER,
 )
 from core.schemas.user import UpdateRoleRequest
+from core.types.role import UserRole
+from core.types.user_id import UserIdType
 
 router = APIRouter(tags=[TEAM_TAG])
 
-TeamID = Annotated[int, Path()]
-UserID = Annotated[int, Path()]
+TeamID = Annotated[UserIdType, Path()]
+UserID = Annotated[UserIdType, Path()]
 
 
 @router.get(
@@ -32,6 +34,7 @@ async def get_team_with_users(
     crud: TeamServiceDep,
     user: CurrentActiveAdmin,
     team_id: TeamID,
+    role_filter: Annotated[UserRole, Query()] = None,
 ):
     """
     Получить состав команды.
@@ -40,6 +43,7 @@ async def get_team_with_users(
         crud: Сервис для работы с командами
         user: Текущий пользователь
         team_id: ID команды
+        role_filter: Фильтрация по роли
 
     Returns:
         list[TeamSchema]: Список с одной командой и её пользователями
@@ -47,6 +51,7 @@ async def get_team_with_users(
     return await crud.get_team_with_users(
         team_id=team_id,
         current_user=user,
+        role_filter=role_filter,
     )
 
 

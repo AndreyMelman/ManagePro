@@ -1,7 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import (
+    selectinload,
+    with_loader_criteria,
+)
 
 from core.models import User, Team
 from core.schemas.team import TeamCreateSchema
@@ -17,6 +20,7 @@ from core.exceptions.team import (
     CannotAddTeamAdmin,
 )
 from core.schemas.user import UpdateRoleRequest
+from core.types.role import UserRole
 
 
 class TeamService:
@@ -226,6 +230,7 @@ class TeamService:
         self,
         team_id: int,
         current_user: User,
+        role_filter: UserRole,
     ) -> Team:
         """
         Получить состав команды.
@@ -233,6 +238,7 @@ class TeamService:
         Args:
             team_id: ID команды
             current_user: Текущий администратор команды
+            role_filter: Фильтрация по роли
 
         Returns:
             Team: Команда с загруженными пользователями
@@ -244,7 +250,11 @@ class TeamService:
         if current_user.team_id != team_id:
             raise TeamAccessDeniedError()
 
-        stmt = select(Team).options(selectinload(Team.users)).where(Team.id == team_id)
+        stmt = select(Team).where(Team.id == team_id).options(selectinload(Team.users))
+
+        if role_filter:
+            stmt = stmt.options(with_loader_criteria(User, User.role == role_filter))
+
         result = await self.session.execute(stmt)
         team = result.scalar_one_or_none()
 
