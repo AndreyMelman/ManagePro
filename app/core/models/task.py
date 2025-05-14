@@ -37,7 +37,11 @@ class Task(
     status: Mapped[TaskStatus] = mapped_column(String, default=TaskStatus.OPEN)
 
     creator_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    assignee_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    assignee_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=True,
+    )
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey("teams.id"))
 
     creator: Mapped["User"] = relationship(
