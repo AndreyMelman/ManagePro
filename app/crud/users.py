@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.exceptions.user import (
+from exceptions.user_exceptions import (
     UserNotFoundError,
     UserCannotChangeRole,
 )

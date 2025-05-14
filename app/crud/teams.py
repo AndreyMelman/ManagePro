@@ -5,19 +5,20 @@ from sqlalchemy.orm import (
     selectinload,
     with_loader_criteria,
 )
-
 from core.models import User, Team
 from core.schemas.team import TeamCreateSchema
-from core.exceptions.team import (
+from exceptions.team_exceptions import (
     TeamNotFoundError,
-    UserNotFoundError,
     TeamAccessDeniedError,
     TeamAdminRequiredError,
-    UserAlreadyInTeamError,
-    UserNotInTeamError,
     CannotRemoveTeamAdminError,
     TeamCodeExistsError,
-    CannotAddTeamAdmin,
+    CannotAddTeamAdminError,
+)
+from exceptions.user_exceptions import (
+    UserNotFoundError,
+    UserAlreadyInTeamError,
+    UserNotInTeamError,
 )
 from core.schemas.user import UpdateRoleRequest
 from core.types.role import UserRole
@@ -187,7 +188,7 @@ class TeamService:
             raise UserNotInTeamError()
 
         if role_data.role == "admin":
-            raise CannotAddTeamAdmin()
+            raise CannotAddTeamAdminError()
 
         user.role = role_data.role
         await self.session.commit()
