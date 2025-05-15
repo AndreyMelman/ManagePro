@@ -11,7 +11,8 @@ from exceptions.team_exceptions import (
 from exceptions.task_exceptions import (
     TaskNotTeamError,
     TaskNotFoundError,
-    TaskPermissionError, InvalidAssigneeError,
+    TaskPermissionError,
+    InvalidAssigneeError,
 )
 from exceptions.user_exceptions import (
     UserNotFoundError,
@@ -164,5 +165,7 @@ def register_errors_handlers(main_app: FastAPI) -> None:
     ) -> ORJSONResponse:
         return ORJSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"message": "Исполнитель должен быть из той же команды, что и руководитель."},
+            content={
+                "message": "Исполнитель должен быть из той же команды, что и руководитель."
+            },
         )
