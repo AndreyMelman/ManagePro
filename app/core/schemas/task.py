@@ -34,6 +34,7 @@ class TaskUpdateShema(BaseModel):
     description: Annotated[str | None, Field(max_length=250)] = None
     deadline: Annotated[datetime | None, Field()] = "2025-01-01T00:00:00"
     status: Annotated[TaskStatus | None, Field()] = TaskStatus.OPEN
+    assignee_id: Annotated[int | None, Field()] = None
 
 
 class TaskSchema(TaskBaseSchema):
