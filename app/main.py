@@ -14,6 +14,7 @@ logging.basicConfig(
     format=settings.logging.log_format,
 )
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
