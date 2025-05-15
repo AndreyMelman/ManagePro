@@ -7,7 +7,8 @@ from core.permissions import task_not_team_error, check_task_owner
 from exceptions.task_exceptions import (
     TaskNotTeamError,
     TaskNotFoundError,
-    TaskPermissionError, InvalidAssigneeError,
+    TaskPermissionError,
+    InvalidAssigneeError,
 )
 from core.models import User, Task
 from core.schemas.task import TaskCreateShema, TaskUpdateShema
@@ -53,7 +54,9 @@ class TaskService:
         task_not_team_error(current_user)
 
         if task_in.assignee_id is not None:
-            assignee = await self._get_team_user_by_id(task_in.assignee_id, current_user.team_id)
+            assignee = await self._get_team_user_by_id(
+                task_in.assignee_id, current_user.team_id
+            )
             if assignee is None:
                 raise InvalidAssigneeError()
 
