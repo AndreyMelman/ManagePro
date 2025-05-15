@@ -8,7 +8,11 @@ from exceptions.team_exceptions import (
     TeamCodeExistsError,
     CannotAddTeamAdminError,
 )
-from exceptions.task_exceptions import TaskNotTeamError
+from exceptions.task_exceptions import (
+    TaskNotTeamError,
+    TaskNotFoundError,
+    TaskPermissionError, InvalidAssigneeError,
+)
 from exceptions.user_exceptions import (
     UserNotFoundError,
     UserAlreadyInTeamError,
@@ -131,4 +135,34 @@ def register_errors_handlers(main_app: FastAPI) -> None:
         return ORJSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "Суперпользователь не может изменить свою роль"},
+        )
+
+    @main_app.exception_handler(TaskNotFoundError)
+    async def handle_task_not_found(
+        request: Request,
+        exc: TaskNotFoundError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "Задача не найдена"},
+        )
+
+    @main_app.exception_handler(TaskPermissionError)
+    async def handle_task_permission_error(
+        request: Request,
+        exc: TaskPermissionError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"message": "Нет прав для обновления задачи другой команды"},
+        )
+
+    @main_app.exception_handler(InvalidAssigneeError)
+    async def handle_invalid_assignee(
+        request: Request,
+        exc: InvalidAssigneeError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Исполнитель должен быть из той же команды, что и руководитель."},
         )
