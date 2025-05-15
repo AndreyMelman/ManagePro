@@ -23,7 +23,7 @@ async def get_user_with_role(
     if user.role != role:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"User must have {role} role",
+            detail=f"Пользователь должен иметь роль - manager",
         )
     return user
 
