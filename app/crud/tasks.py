@@ -1,30 +1,40 @@
-from typing import Any, Coroutine
-
-from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from core.permissions import task_not_team_error, check_task_owner
-from exceptions.task_exceptions import (
-    TaskNotTeamError,
-    TaskNotFoundError,
-    TaskPermissionError,
-    InvalidAssigneeError,
+from sqlalchemy import (
+    select,
+    Result,
 )
-from core.models import User, Task
-from core.schemas.task import TaskCreateShema, TaskUpdateShema
+from .validators.permissions import (
+    ensure_user_has_team,
+    check_task_owner,
+)
+from core.models import (
+    User,
+    Task,
+)
+from core.schemas.task import (
+    TaskCreateShema,
+    TaskUpdateShema,
+)
+from exceptions.task_exceptions import InvalidAssigneeError
 
 
 class TaskService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def _get_user_by_id(self, user_id: int) -> User | None:
+    async def _get_user_by_id(
+        self,
+        user_id: int,
+    ) -> User | None:
         stmt = select(User).where(User.id == user_id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def _get_team_user_by_id(self, user_id: int, team_id: int) -> User | None:
-        """Возвращает пользователя по ID, если он принадлежит указанной команде."""
+    async def _get_team_user_by_id(
+        self,
+        user_id: int,
+        team_id: int,
+    ) -> User | None:
         stmt = select(User).where(
             User.id == user_id,
             User.team_id == team_id,
@@ -51,7 +61,7 @@ class TaskService:
         current_user: User,
         task_in: TaskCreateShema,
     ) -> Task:
-        task_not_team_error(current_user)
+        await ensure_user_has_team(current_user)
 
         if task_in.assignee_id is not None:
             assignee = await self._get_team_user_by_id(
@@ -73,12 +83,12 @@ class TaskService:
 
     async def update_task(
         self,
-        current_user: User,
         task: Task,
+        current_user: User,
         task_update: TaskUpdateShema,
         partial: bool = False,
     ) -> Task:
-        check_task_owner(current_user, task)
+        await check_task_owner(current_user, task)
 
         update_data = task_update.model_dump(exclude_unset=partial)
 
@@ -98,10 +108,10 @@ class TaskService:
 
     async def delete_task(
         self,
-        current_user: User,
         task: Task,
+        current_user: User,
     ) -> None:
-        check_task_owner(current_user, task)
+        await check_task_owner(current_user, task)
 
         await self.session.delete(task)
         await self.session.commit()
