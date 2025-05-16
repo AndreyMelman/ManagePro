@@ -24,3 +24,7 @@ class TeamCodeExistsError(ServiceError):
 
 class CannotAddTeamAdminError(ServiceError):
     pass
+
+
+class TeamAdminError(ServiceError):
+    pass
