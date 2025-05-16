@@ -7,6 +7,7 @@ from exceptions.team_exceptions import (
     CannotRemoveTeamAdminError,
     TeamCodeExistsError,
     CannotAddTeamAdminError,
+    TeamAdminError,
 )
 from exceptions.task_exceptions import (
     TaskNotTeamError,
@@ -63,6 +64,18 @@ def register_errors_handlers(main_app: FastAPI) -> None:
             status_code=status.HTTP_403_FORBIDDEN,
             content={
                 "message": f"Только админ команды {exc.team_name} может выполнять это действие"
+            },
+        )
+
+    @main_app.exception_handler(TeamAdminError)
+    async def handle_admin_required(
+        request: Request,
+        exc: TeamAdminRequiredError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={
+                "message": f"Только админ без команды может выполнять это действие"
             },
         )
 
