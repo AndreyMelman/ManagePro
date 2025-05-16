@@ -61,7 +61,7 @@ class TaskService:
         current_user: User,
         task_in: TaskCreateShema,
     ) -> Task:
-        await ensure_user_has_team(current_user)
+        ensure_user_has_team(current_user)
 
         if task_in.assignee_id is not None:
             assignee = await self._get_team_user_by_id(
@@ -88,7 +88,7 @@ class TaskService:
         task_update: TaskUpdateShema,
         partial: bool = False,
     ) -> Task:
-        await check_task_owner(current_user, task)
+        check_task_owner(current_user, task)
 
         update_data = task_update.model_dump(exclude_unset=partial)
 
@@ -111,7 +111,7 @@ class TaskService:
         task: Task,
         current_user: User,
     ) -> None:
-        await check_task_owner(current_user, task)
+        check_task_owner(current_user, task)
 
         await self.session.delete(task)
         await self.session.commit()

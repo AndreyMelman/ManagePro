@@ -17,14 +17,14 @@ from exceptions.user_exceptions import (
 )
 
 
-async def ensure_user_has_team(
+def ensure_user_has_team(
     user: User,
 ) -> None:
     if not user.team_id:
         raise TaskNotTeamError()
 
 
-async def check_task_owner(
+def check_task_owner(
     user: User,
     task: Task,
 ) -> None:
@@ -32,7 +32,7 @@ async def check_task_owner(
         raise TaskPermissionError()
 
 
-async def validate_team_access(
+def validate_team_access(
     user: User,
     team: Team,
 ) -> None:
@@ -40,7 +40,7 @@ async def validate_team_access(
         raise TeamAccessDeniedError()
 
 
-async def ensure_user_in_team(
+def ensure_user_in_team(
     user: User,
     team: Team,
 ) -> None:
@@ -48,7 +48,7 @@ async def ensure_user_in_team(
         raise UserNotInTeamError()
 
 
-async def check_team_admin(
+def check_team_admin(
     user: User,
     team: Team,
 ) -> None:
@@ -56,28 +56,28 @@ async def check_team_admin(
         raise TeamAdminRequiredError(team.name)
 
 
-async def ensure_user_is_admin(
+def ensure_user_is_admin(
     user: User,
 ) -> None:
     if user.role != UserRole.ADMIN:
         raise TeamAdminError()
 
 
-async def ensure_user_not_in_team(
+def ensure_user_not_in_team(
     user: User,
 ) -> None:
     if user.team_id:
         raise UserAlreadyInTeamError(user.team_id)
 
 
-async def disallow_admin_assignment(
+def disallow_admin_assignment(
     role_data: UpdateRoleRequest,
 ) -> None:
     if role_data.role == "admin":
         raise CannotAddTeamAdminError()
 
 
-async def remove_team_admin(
+def remove_team_admin(
     user: User,
     team: Team,
 ) -> None:
@@ -85,14 +85,14 @@ async def remove_team_admin(
         raise CannotRemoveTeamAdminError()
 
 
-async def ensure_user_exists(
+def ensure_user_exists(
     user: User | None,
 ) -> None:
     if not user:
         raise UserNotFoundError()
 
 
-async def disallow_self_role_change(
+def disallow_self_role_change(
     user: User | None,
     current_user: User,
 ) -> None:

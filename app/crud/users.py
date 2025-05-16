@@ -33,8 +33,8 @@ class UserService:
         """
         user = await self.session.get(User, user_id)
 
-        await ensure_user_exists(user)
-        await disallow_self_role_change(user, current_user)
+        ensure_user_exists(user)
+        disallow_self_role_change(user, current_user)
 
         user.role = role_data.role
         await self.session.commit()

@@ -92,7 +92,7 @@ class TeamService:
         Raises:
             validate_team_access: Если текущий пользователь не является администратором команды
         """
-        await validate_team_access(current_user, team)
+        validate_team_access(current_user, team)
 
         stmt = select(Team).where(Team.id == team.id).options(selectinload(Team.users))
 
@@ -124,8 +124,8 @@ class TeamService:
             ensure_user_not_in_team: Если администратор уже состоит в команде
             TeamCodeExistsError: Если код команды уже существует
         """
-        await ensure_user_is_admin(current_user)
-        await ensure_user_not_in_team(current_user)
+        ensure_user_is_admin(current_user)
+        ensure_user_not_in_team(current_user)
 
         team = Team(**team_in.model_dump(), admin_id=current_user.id)
         try:
@@ -160,8 +160,8 @@ class TeamService:
             ensure_user_not_in_team: Если пользователь уже состоит в команде
         """
         user = await self._get_user(user_id)
-        await check_team_admin(current_user, team)
-        await ensure_user_not_in_team(user)
+        check_team_admin(current_user, team)
+        ensure_user_not_in_team(user)
 
         user.team_id = team.id
         await self.session.commit()
@@ -192,9 +192,9 @@ class TeamService:
         """
         user = await self._get_user(user_id)
 
-        await check_team_admin(current_user, team)
-        await ensure_user_in_team(user, team)
-        await disallow_admin_assignment(role_data)
+        check_team_admin(current_user, team)
+        ensure_user_in_team(user, team)
+        disallow_admin_assignment(role_data)
 
         user.role = role_data.role
         await self.session.commit()
@@ -220,9 +220,9 @@ class TeamService:
         """
         user = await self._get_user(user_id)
 
-        await validate_team_access(current_user, team)
-        await ensure_user_in_team(user, team)
-        await remove_team_admin(user, team)
+        validate_team_access(current_user, team)
+        ensure_user_in_team(user, team)
+        remove_team_admin(user, team)
 
         user.team_id = None
         user.role = UserRole.USER
