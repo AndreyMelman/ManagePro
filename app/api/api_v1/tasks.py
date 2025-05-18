@@ -59,3 +59,18 @@ async def update_task(
         task_update=task_update,
         partial=True,
     )
+
+
+@router.delete(
+    "/{task_id}",
+    response_model=TaskSchema,
+)
+async def delete_task(
+    crud: TaskServiceDep,
+    current_user: CurrentActiveManager,
+    task: Task = Depends(get_task_by_id),
+):
+    return await crud.delete_task(
+        task=task,
+        current_user=current_user,
+    )
