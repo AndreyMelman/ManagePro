@@ -15,3 +15,7 @@ class TaskPermissionError(ServiceError):
 
 class InvalidAssigneeError(ServiceError):
     pass
+
+
+class TaskCommentPermissionError(ServiceError):
+    pass
