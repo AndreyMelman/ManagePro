@@ -14,6 +14,7 @@ from exceptions.task_exceptions import (
     TaskNotFoundError,
     TaskPermissionError,
     InvalidAssigneeError,
+    TaskCommentPermissionError,
 )
 from exceptions.user_exceptions import (
     UserNotFoundError,
@@ -180,5 +181,17 @@ def register_errors_handlers(main_app: FastAPI) -> None:
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
                 "message": "Исполнитель должен быть из той же команды, что и руководитель."
+            },
+        )
+
+    @main_app.exception_handler(TaskCommentPermissionError)
+    async def handle_task_comment_permission_error(
+        request: Request,
+        exc: TaskCommentPermissionError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "message": "Для просмотра комментариев задачи необходимо быть в группе"
             },
         )
