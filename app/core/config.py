@@ -41,6 +41,7 @@ class ApiV1Prefix(BaseModel):
     auth: str = "/auth"
     users: str = "/users"
     teams: str = "/teams"
+    task_comments: str = "/task_comments"
 
 
 class ApiPrefix(BaseModel):
