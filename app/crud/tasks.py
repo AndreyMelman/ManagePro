@@ -50,7 +50,7 @@ class TaskService:
 
         stmt = select(Task).where(
             Task.id == task_id,
-            Task.creator_id == current_user.id,
+            Task.team_id == current_user.team_id,
         )
         result: Result = await self.session.execute(stmt)
         task = result.scalars().first()
