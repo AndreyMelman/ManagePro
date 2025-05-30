@@ -28,14 +28,12 @@ class TaskCommentService:
         comments = result.scalars().all()
         return list(comments)
 
-
     async def create_task_comment(
         self,
         task: Task,
         current_user: User,
         comment_in: TaskCommentCreateSchema,
     ) -> TaskComment:
-
 
         comment = TaskComment(
             **comment_in.model_dump(),
