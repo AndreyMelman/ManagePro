@@ -10,6 +10,7 @@ from api.api_v1.fastapi_users import (
 )
 from api.dependencies.dependencies import make_crud_dependency
 from core.models import User
+from crud.task_comments import TaskCommentService
 from crud.tasks import TaskService
 from crud.teams import TeamService
 from crud.users import UserService
@@ -17,6 +18,9 @@ from crud.users import UserService
 TeamServiceDep = Annotated[TeamService, Depends(make_crud_dependency(TeamService))]
 UserServiceDep = Annotated[UserService, Depends(make_crud_dependency(UserService))]
 TaskServiceDep = Annotated[TaskService, Depends(make_crud_dependency(TaskService))]
+TaskCommentServiceDep = Annotated[
+    TaskCommentService, Depends(make_crud_dependency(TaskCommentService))
+]
 CurrentActiveUser = Annotated[User, Depends(current_active_user)]
 CurrentActiveManager = Annotated[User, Depends(get_manager)]
 CurrentActiveAdmin = Annotated[User, Depends(get_admin)]
