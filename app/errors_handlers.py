@@ -8,6 +8,7 @@ from exceptions.team_exceptions import (
     TeamCodeExistsError,
     CannotAddTeamAdminError,
     TeamAdminError,
+    TaskCommentNotFoundError,
 )
 from exceptions.task_exceptions import (
     TaskNotTeamError,
@@ -15,6 +16,7 @@ from exceptions.task_exceptions import (
     TaskPermissionError,
     InvalidAssigneeError,
     TaskCommentPermissionError,
+    TaskCommentOwnerError,
 )
 from exceptions.user_exceptions import (
     UserNotFoundError,
@@ -192,6 +194,26 @@ def register_errors_handlers(main_app: FastAPI) -> None:
         return ORJSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
-                "message": "Для просмотра комментариев задачи необходимо быть в группе"
+                "message": "Для просмотра комментариев задачи, необходимо быть в группе"
             },
+        )
+
+    @main_app.exception_handler(TaskCommentOwnerError)
+    async def handle_task_comment_owner_error(
+        request: Request,
+        exc: TaskCommentOwnerError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Вы можете обновлять только свои комментарии"},
+        )
+
+    @main_app.exception_handler(TaskCommentNotFoundError)
+    async def handle_task_comment_not_found_error(
+        request: Request,
+        exc: TaskCommentNotFoundError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "Комментарий не найден"},
         )

@@ -28,3 +28,7 @@ class CannotAddTeamAdminError(ServiceError):
 
 class TeamAdminError(ServiceError):
     pass
+
+
+class TaskCommentNotFoundError(ServiceError):
+    pass

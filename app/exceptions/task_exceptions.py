@@ -19,3 +19,7 @@ class InvalidAssigneeError(ServiceError):
 
 class TaskCommentPermissionError(ServiceError):
     pass
+
+
+class TaskCommentOwnerError(ServiceError):
+    pass
