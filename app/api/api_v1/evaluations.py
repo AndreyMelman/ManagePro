@@ -1,0 +1,44 @@
+from fastapi import APIRouter, Depends
+from api.dependencies.load_by_id import get_task_by_id
+from api.dependencies.params import (
+    EvaluationServiceDep,
+    CurrentActiveManager,
+)
+from core.models import Task
+from core.schemas.evaluation import (
+    EvaluationSchema,
+    EvaluationCreateSchema,
+)
+
+router = APIRouter(tags=["Evaluations"])
+
+
+@router.post(
+    "/{task_id}",
+    response_model=EvaluationSchema,
+)
+async def create_evaluation(
+    crud: EvaluationServiceDep,
+    current_user: CurrentActiveManager,
+    evaluation_in: EvaluationCreateSchema,
+    task: Task = Depends(get_task_by_id),
+):
+    """
+    Создать новую оценку.
+
+    Args:
+        crud: Сервис для работы с оценками
+        current_user: Текущий администратор
+        evaluation_in: Данные для создания оценки
+        task
+
+    Returns:
+        EvaluationSchema: Созданная оценка
+    """
+    return await crud.create_evaluation(
+        evaluation_in=evaluation_in,
+        current_user=current_user,
+        task=task,
+    )
+
+
