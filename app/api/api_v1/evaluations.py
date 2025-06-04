@@ -1,4 +1,9 @@
+from datetime import datetime
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
+from fastapi.params import Query
+
 from api.dependencies.load_by_id import get_task_by_id
 from api.dependencies.params import (
     EvaluationServiceDep,
@@ -20,6 +25,19 @@ async def get_evaluations(
     current_user: CurrentActiveUser,
 ):
     return await crud.get_evaluations(current_user)
+
+@router.get("/average")
+async def get_average_score(
+    crud: EvaluationServiceDep,
+    current_user: CurrentActiveUser,
+    start_date: Annotated[datetime | None, Query()] = None,
+    end_date: Annotated[datetime | None, Query()] = None,
+):
+    return await crud.get_average_score(
+        current_user=current_user,
+        start_date=start_date,
+        end_date=end_date,
+    )
 
 @router.post(
     "/{task_id}",
