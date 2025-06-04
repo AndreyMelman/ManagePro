@@ -40,5 +40,3 @@ async def create_evaluation(
         current_user=current_user,
         task=task,
     )
-
-
