@@ -1,11 +1,15 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import Evaluation, User, Task
+from core.models import (
+    Evaluation,
+    User,
+    Task,
+)
 from core.schemas.evaluation import (
     EvaluationCreateSchema,
 )
-from crud.validators.evaluation_validators import already_estimated
+from crud.validators.evaluation_validators import already_estimated, is_task_completed
 
 
 class EvaluationService:
@@ -18,8 +22,11 @@ class EvaluationService:
         current_user: User,
         task: Task,
     ) -> Evaluation:
+        is_task_completed(task=task)
+
         stmt = select(Evaluation).where(
-            Evaluation.task_id == task.id, Evaluation.evaluator_id == current_user.id
+            Evaluation.task_id == task.id,
+            Evaluation.evaluator_id == current_user.id,
         )
         existing_evaluation = await self.session.execute(stmt)
 
