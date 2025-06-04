@@ -1,4 +1,6 @@
-from sqlalchemy import select
+from datetime import datetime
+
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import (
@@ -29,6 +31,22 @@ class EvaluationService:
         evaluations = result.scalars().all()
         return list(evaluations)
 
+    async def get_average_score(
+        self,
+        current_user: User,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> float:
+        stmt = select(func.avg(Evaluation.score)).where(Evaluation.user_id == current_user.id)
+
+        if start_date:
+            stmt = stmt.where(Evaluation.created_at >= start_date)
+
+        if end_date:
+            stmt = stmt.where(Evaluation.created_at <= end_date)
+
+        result = await self.session.execute(stmt)
+        return result.scalar() or 0.0
 
     async def create_evaluation(
         self,
