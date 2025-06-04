@@ -3,15 +3,23 @@ from api.dependencies.load_by_id import get_task_by_id
 from api.dependencies.params import (
     EvaluationServiceDep,
     CurrentActiveManager,
+    CurrentActiveUser,
 )
 from core.models import Task
 from core.schemas.evaluation import (
     EvaluationSchema,
-    EvaluationCreateSchema,
+    EvaluationCreateSchema, EvaluationBaseSchema,
 )
 
 router = APIRouter(tags=["Evaluations"])
 
+
+@router.get("", response_model=list[EvaluationBaseSchema])
+async def get_evaluations(
+    crud: EvaluationServiceDep,
+    current_user: CurrentActiveUser,
+):
+    return await crud.get_evaluations(current_user)
 
 @router.post(
     "/{task_id}",
