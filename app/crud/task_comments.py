@@ -39,7 +39,10 @@ class TaskCommentService:
         comment_id: int,
     ) -> TaskComment:
         check_user_command(user=current_user, task=task)
-        stmt = select(TaskComment).where(TaskComment.task_id == task.id, TaskComment.id == comment_id,)
+        stmt = select(TaskComment).where(
+            TaskComment.task_id == task.id,
+            TaskComment.id == comment_id,
+        )
         result: Result = await self.session.execute(stmt)
         comment = result.scalars().first()
         return comment

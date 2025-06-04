@@ -19,11 +19,10 @@ class EvaluationService:
         task: Task,
     ) -> Evaluation:
         stmt = select(Evaluation).where(
-                Evaluation.task_id == task.id,
-                Evaluation.evaluator_id == current_user.id
-            )
+            Evaluation.task_id == task.id, Evaluation.evaluator_id == current_user.id
+        )
         existing_evaluation = await self.session.execute(stmt)
-        
+
         already_estimated(existing_evaluation)
 
         evaluation = Evaluation(
@@ -37,4 +36,3 @@ class EvaluationService:
         await self.session.commit()
         await self.session.refresh(evaluation)
         return evaluation
-
