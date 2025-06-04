@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import ORJSONResponse
+
+from exceptions.evaluation_exceptions import DuplicateEstimateError
 from exceptions.team_exceptions import (
     TeamNotFoundError,
     TeamAccessDeniedError,
@@ -216,4 +218,14 @@ def register_errors_handlers(main_app: FastAPI) -> None:
         return ORJSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={"message": "Комментарий не найден"},
+        )
+
+    @main_app.exception_handler(DuplicateEstimateError)
+    async def handle_duplicate_estimate_error(
+        request: Request,
+        exc: DuplicateEstimateError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "У задачи уже есть оценка"},
         )
