@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import ORJSONResponse
 
-from exceptions.evaluation_exceptions import DuplicateEstimateError
+from exceptions.evaluation_exceptions import DuplicateEstimateError, TaskNotCompletedError
 from exceptions.team_exceptions import (
     TeamNotFoundError,
     TeamAccessDeniedError,
@@ -228,4 +228,14 @@ def register_errors_handlers(main_app: FastAPI) -> None:
         return ORJSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "У задачи уже есть оценка"},
+        )
+
+    @main_app.exception_handler(TaskNotCompletedError)
+    async def handle_task_not_completed_error(
+        request: Request,
+        exc: TaskNotCompletedError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Нельзя ставить оценку задаче, которая не выполнена"},
         )
