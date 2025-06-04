@@ -14,6 +14,7 @@ from crud.task_comments import TaskCommentService
 from crud.tasks import TaskService
 from crud.teams import TeamService
 from crud.users import UserService
+from crud.evaluations import EvaluationService
 
 TeamServiceDep = Annotated[TeamService, Depends(make_crud_dependency(TeamService))]
 UserServiceDep = Annotated[UserService, Depends(make_crud_dependency(UserService))]
@@ -21,6 +22,10 @@ TaskServiceDep = Annotated[TaskService, Depends(make_crud_dependency(TaskService
 TaskCommentServiceDep = Annotated[
     TaskCommentService, Depends(make_crud_dependency(TaskCommentService))
 ]
+EvaluationServiceDep = Annotated[
+    EvaluationService, Depends(make_crud_dependency(EvaluationService))
+]
+
 CurrentActiveUser = Annotated[User, Depends(current_active_user)]
 CurrentActiveManager = Annotated[User, Depends(get_manager)]
 CurrentActiveAdmin = Annotated[User, Depends(get_admin)]
