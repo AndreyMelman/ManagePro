@@ -16,6 +16,20 @@ class EvaluationService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_evaluations(
+        self,
+        current_user: User,
+    ) -> list[Evaluation]:
+        stmt = (
+            select(Evaluation)
+            .where(Evaluation.user_id == current_user.id)
+            .order_by(Evaluation.id)
+        )
+        result = await self.session.execute(stmt)
+        evaluations = result.scalars().all()
+        return list(evaluations)
+
+
     async def create_evaluation(
         self,
         evaluation_in: EvaluationCreateSchema,
