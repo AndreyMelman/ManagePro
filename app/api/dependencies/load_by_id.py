@@ -1,15 +1,14 @@
 from typing import Annotated
-from fastapi import Path
+from fastapi import Path, HTTPException, status
 from api.dependencies.params import (
     TaskServiceDep,
     TeamServiceDep,
     CurrentActiveAdmin,
     CurrentActiveUser,
     TaskCommentServiceDep,
+    MeetingServiceDep,
 )
-from core.models import Task, Team, TaskComment
-from exceptions.task_exceptions import TaskNotFoundError
-from exceptions.team_exceptions import TeamNotFoundError, TaskCommentNotFoundError
+from core.models import Task, Team, TaskComment, Meeting
 
 
 async def get_task_by_id(
@@ -23,7 +22,10 @@ async def get_task_by_id(
     )
     if task is not None:
         return task
-    raise TaskNotFoundError()
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail={"message": "Задача не найдена"},
+    )
 
 
 async def get_team_by_id(
@@ -37,7 +39,10 @@ async def get_team_by_id(
     )
     if team is not None:
         return team
-    raise TeamNotFoundError()
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail={"message": "Команда не найдена"},
+    )
 
 
 async def get_task_comment_by_id(
@@ -53,4 +58,24 @@ async def get_task_comment_by_id(
     )
     if comment is not None:
         return comment
-    raise TaskCommentNotFoundError()
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail={"message": "Комментарий не найден"},
+    )
+
+
+async def get_meeting_by_id(
+    meeting_id: Annotated[int, Path()],
+    crud: MeetingServiceDep,
+    user: CurrentActiveUser,
+) -> Meeting:
+    meeting = await crud.get_meeting(
+        meeting_id=meeting_id,
+        user=user,
+    )
+    if meeting is not None:
+        return meeting
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Встреча с ID {meeting_id} не найдена",
+    )
