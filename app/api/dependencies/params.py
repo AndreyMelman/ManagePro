@@ -10,6 +10,7 @@ from api.api_v1.fastapi_users import (
 )
 from api.dependencies.dependencies import make_crud_dependency
 from core.models import User
+from crud.calendars import CalendarService
 from crud.meetings import MeetingService
 from crud.task_comments import TaskCommentService
 from crud.tasks import TaskService
@@ -28,6 +29,9 @@ EvaluationServiceDep = Annotated[
 ]
 MeetingServiceDep = Annotated[
     MeetingService, Depends(make_crud_dependency(MeetingService))
+]
+CalendarServiceDep = Annotated[
+    CalendarService, Depends(make_crud_dependency(CalendarService))
 ]
 
 CurrentActiveUser = Annotated[User, Depends(current_active_user)]
