@@ -1,20 +1,22 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import ORJSONResponse
 
-from exceptions.evaluation_exceptions import DuplicateEstimateError, TaskNotCompletedError
+from exceptions.evaluation_exceptions import (
+    DuplicateEstimateError,
+    TaskNotCompletedError,
+)
+from exceptions.meeting_exceptions import MeetingTimeConflictError
+from exceptions.role_exceptions import RoleError
 from exceptions.team_exceptions import (
-    TeamNotFoundError,
     TeamAccessDeniedError,
     TeamAdminRequiredError,
     CannotRemoveTeamAdminError,
     TeamCodeExistsError,
     CannotAddTeamAdminError,
     TeamAdminError,
-    TaskCommentNotFoundError,
 )
 from exceptions.task_exceptions import (
     TaskNotTeamError,
-    TaskNotFoundError,
     TaskPermissionError,
     InvalidAssigneeError,
     TaskCommentPermissionError,
@@ -29,16 +31,6 @@ from exceptions.user_exceptions import (
 
 
 def register_errors_handlers(main_app: FastAPI) -> None:
-
-    @main_app.exception_handler(TeamNotFoundError)
-    async def handle_team_not_found(
-        request: Request,
-        exc: TeamNotFoundError,
-    ) -> ORJSONResponse:
-        return ORJSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"message": "Команда не найдена"},
-        )
 
     @main_app.exception_handler(UserNotFoundError)
     async def handle_user_not_found(
@@ -156,16 +148,6 @@ def register_errors_handlers(main_app: FastAPI) -> None:
             content={"message": "Суперпользователь не может изменить свою роль"},
         )
 
-    @main_app.exception_handler(TaskNotFoundError)
-    async def handle_task_not_found(
-        request: Request,
-        exc: TaskNotFoundError,
-    ) -> ORJSONResponse:
-        return ORJSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"message": "Задача не найдена"},
-        )
-
     @main_app.exception_handler(TaskPermissionError)
     async def handle_task_permission_error(
         request: Request,
@@ -210,16 +192,6 @@ def register_errors_handlers(main_app: FastAPI) -> None:
             content={"message": "Вы можете обновлять только свои комментарии"},
         )
 
-    @main_app.exception_handler(TaskCommentNotFoundError)
-    async def handle_task_comment_not_found_error(
-        request: Request,
-        exc: TaskCommentNotFoundError,
-    ) -> ORJSONResponse:
-        return ORJSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"message": "Комментарий не найден"},
-        )
-
     @main_app.exception_handler(DuplicateEstimateError)
     async def handle_duplicate_estimate_error(
         request: Request,
@@ -238,4 +210,19 @@ def register_errors_handlers(main_app: FastAPI) -> None:
         return ORJSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "Нельзя ставить оценку задаче, которая не выполнена"},
+        )
+
+    @main_app.exception_handler(RoleError)
+    async def role_error_handler(
+        request: Request,
+        exc: RoleError,
+    ) -> ORJSONResponse:
+        return ORJSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={
+                "detail": str(exc),
+                "error_type": "role_error",
+                "role": exc.role,
+                "user_id": exc.user_id,
+            },
         )
