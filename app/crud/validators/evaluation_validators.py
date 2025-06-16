@@ -1,6 +1,9 @@
 from core.models import Task
 from core.schemas.task import TaskStatus
-from exceptions.evaluation_exceptions import (DuplicateEstimateError, TaskNotCompletedError,)
+from exceptions.evaluation_exceptions import (
+    DuplicateEstimateError,
+    TaskNotCompletedError,
+)
 
 
 def already_estimated(
