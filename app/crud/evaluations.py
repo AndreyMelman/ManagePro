@@ -37,7 +37,9 @@ class EvaluationService:
         start_date: datetime | None = None,
         end_date: datetime | None = None,
     ) -> float:
-        stmt = select(func.avg(Evaluation.score)).where(Evaluation.user_id == current_user.id)
+        stmt = select(func.avg(Evaluation.score)).where(
+            Evaluation.user_id == current_user.id
+        )
 
         if start_date:
             stmt = stmt.where(Evaluation.created_at >= start_date)
