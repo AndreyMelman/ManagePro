@@ -43,6 +43,7 @@ class ApiV1Prefix(BaseModel):
     teams: str = "/teams"
     task_comments: str = "/task_comments"
     evaluation: str = "/evaluation"
+    meeting: str = "/meeting"
 
 
 class ApiPrefix(BaseModel):
