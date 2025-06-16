@@ -19,7 +19,7 @@ class MeetingUpdateSchema(MeetingBaseSchema):
     title: Annotated[str | None, Field(min_length=1, max_length=250)] = None
     description: Annotated[str | None, Field(max_length=250)] = None
     start_datetime: Annotated[datetime | None, Field()] = None
-    end_datetime: Annotated[datetime | None , Field()] = None
+    end_datetime: Annotated[datetime | None, Field()] = None
     is_cancelled: Annotated[bool | None, Field()] = None
     participants: Annotated[list[int] | None, Field()] = None
 
@@ -33,5 +33,3 @@ class MeetingSchema(MeetingBaseSchema):
     organizer_id: int
     team_id: int
     is_cancelled: bool
-    participants: list[int]
-
