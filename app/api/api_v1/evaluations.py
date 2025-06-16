@@ -13,7 +13,8 @@ from api.dependencies.params import (
 from core.models import Task
 from core.schemas.evaluation import (
     EvaluationSchema,
-    EvaluationCreateSchema, EvaluationBaseSchema,
+    EvaluationCreateSchema,
+    EvaluationBaseSchema,
 )
 
 router = APIRouter(tags=["Evaluations"])
@@ -25,6 +26,7 @@ async def get_evaluations(
     current_user: CurrentActiveUser,
 ):
     return await crud.get_evaluations(current_user)
+
 
 @router.get("/average")
 async def get_average_score(
@@ -38,6 +40,7 @@ async def get_average_score(
         start_date=start_date,
         end_date=end_date,
     )
+
 
 @router.post(
     "/{task_id}",

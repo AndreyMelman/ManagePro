@@ -9,6 +9,7 @@ from api.dependencies.load_by_id import get_team_by_id
 from api.dependencies.params import (
     TeamServiceDep,
     CurrentActiveAdmin,
+    CurrentActiveUser,
 )
 from core.models import Team
 from core.schemas.team import (
@@ -40,7 +41,7 @@ UserID = Annotated[UserIdType, Path()]
 )
 async def get_team_with_users(
     crud: TeamServiceDep,
-    current_user: CurrentActiveAdmin,
+    current_user: CurrentActiveUser,
     team: Team = Depends(get_team_by_id),
     role_filter: Annotated[UserRole, Query()] = None,
 ):
