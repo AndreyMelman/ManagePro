@@ -5,10 +5,6 @@ class TaskNotTeamError(ServiceError):
     pass
 
 
-class TaskNotFoundError(ServiceError):
-    pass
-
-
 class TaskPermissionError(ServiceError):
     pass
 

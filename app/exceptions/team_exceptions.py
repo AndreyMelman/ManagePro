@@ -1,10 +1,6 @@
 from .base_exceptions import ServiceError
 
 
-class TeamNotFoundError(ServiceError):
-    pass
-
-
 class TeamAccessDeniedError(ServiceError):
     pass
 
@@ -27,8 +23,4 @@ class CannotAddTeamAdminError(ServiceError):
 
 
 class TeamAdminError(ServiceError):
-    pass
-
-
-class TaskCommentNotFoundError(ServiceError):
     pass
