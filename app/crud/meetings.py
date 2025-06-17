@@ -29,7 +29,6 @@ class MeetingService:
         meeting_in: MeetingCreateSchema,
         user: User,
     ) -> Meeting:
-        # Проверяем наложение времени для всех участников
         for participant_id in meeting_in.participants:
             await self._check_time_conflicts(
                 user=await self.session.get(User, participant_id),
@@ -37,7 +36,6 @@ class MeetingService:
                 end_datetime=meeting_in.end_datetime,
             )
 
-        # Создаем встречу
         meeting = Meeting(
             title=meeting_in.title,
             description=meeting_in.description,
@@ -49,7 +47,6 @@ class MeetingService:
         self.session.add(meeting)
         await self.session.flush()
 
-        # Добавляем участников
         for user_id in meeting_in.participants:
             participant = MeetingParticipant(meeting_id=meeting.id, user_id=user_id)
             self.session.add(participant)
@@ -139,7 +136,6 @@ class MeetingService:
         end_datetime: datetime,
         exclude_meeting_id: int | None = None,
     ) -> None:
-        """Проверка наложения времени встреч"""
         query = (
             select(Meeting)
             .join(MeetingParticipant)
