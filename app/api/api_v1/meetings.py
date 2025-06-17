@@ -24,8 +24,8 @@ from core.schemas.meeting import (
     MeetingUpdateSchema,
 )
 from core.types.role import UserRole
-from crud.validators.role_validators import ensure_user_role
-from crud.validators.task_validators import ensure_user_has_team
+from api.api_v1.validators.role_validators import ensure_user_role
+from api.api_v1.validators.task_validators import ensure_user_has_team
 from exceptions.meeting_exceptions import (
     MeetingParticipantValidationError,
     MeetingNotFoundError,

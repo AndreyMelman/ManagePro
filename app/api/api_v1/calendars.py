@@ -13,7 +13,7 @@ from core.schemas.calendar import (
     CalendarMonthView,
     CalendarDayView,
 )
-from crud.validators.task_validators import ensure_user_has_team
+from api.api_v1.validators.task_validators import ensure_user_has_team
 from api.docs.calendars import (
     CALENDAR_TAG,
     GET_MONTH_VIEW,
