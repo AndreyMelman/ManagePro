@@ -1,14 +1,10 @@
 from fastapi import status
 
-from core.schemas.team import TeamSchema, TeamUpdateSchema
-from core.schemas.user import UpdateRoleRequest, UserUpdate
+from core.schemas.team import TeamSchema
 
-# Общие описания
 TEAM_TAG = "Teams"
 TEAM_PREFIX = "/teams"
-TASK_TAG = "Tasks"
 
-# Документация для получения состава команды
 GET_TEAM_WITH_USERS = {
     "summary": "Получить состав команды",
     "description": """
@@ -44,7 +40,6 @@ GET_TEAM_WITH_USERS = {
     },
 }
 
-# Документация для получения команды
 GET_TEAM = {
     "response_model": TeamSchema,
     "summary": "Получить команду",
@@ -61,8 +56,6 @@ GET_TEAM = {
     },
 }
 
-
-# Документация для создания команды
 CREATE_TEAM = {
     "response_model": TeamSchema,
     "status_code": status.HTTP_201_CREATED,
@@ -92,7 +85,6 @@ CREATE_TEAM = {
     },
 }
 
-# Документация для добавления пользователя в команду
 ADD_USER_TO_TEAM = {
     "status_code": status.HTTP_201_CREATED,
     "summary": "Добавить пользователя в команду",
@@ -110,7 +102,6 @@ ADD_USER_TO_TEAM = {
     },
 }
 
-# Документация для удаления пользователя из команды
 REMOVE_USER_FROM_TEAM = {
     "status_code": status.HTTP_204_NO_CONTENT,
     "summary": "Удалить пользователя из команды",
