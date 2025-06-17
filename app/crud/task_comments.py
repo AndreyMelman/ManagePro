@@ -3,9 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Task, User, TaskComment
 from core.schemas.task_comment import TaskCommentCreateSchema, TaskCommentUpdateSchema
-from crud.validators.task_validators import (
+from api.api_v1.validators.task_validators import (
     check_user_command,
-    check_task_owner,
     check_task_comment_owner,
 )
 

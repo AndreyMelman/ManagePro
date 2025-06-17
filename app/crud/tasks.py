@@ -3,7 +3,7 @@ from sqlalchemy import (
     select,
     Result,
 )
-from .validators.task_validators import (
+from api.api_v1.validators.task_validators import (
     ensure_user_has_team,
     check_task_owner,
 )

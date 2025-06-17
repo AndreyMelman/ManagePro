@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.models import User
 from core.schemas.user import UpdateRoleRequest
 
-from .validators.user_validators import (
+from api.api_v1.validators.user_validators import (
     ensure_user_exists,
     disallow_self_role_change,
 )

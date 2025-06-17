@@ -6,14 +6,14 @@ from sqlalchemy.orm import (
     with_loader_criteria,
 )
 from core.models import User, Team
-from .validators.team_validators import (
+from api.api_v1.validators.team_validators import (
     validate_team_access,
     check_team_admin,
     ensure_user_is_admin,
     disallow_admin_assignment,
     remove_team_admin,
 )
-from .validators.user_validators import (
+from api.api_v1.validators.user_validators import (
     ensure_user_not_in_team,
     ensure_user_in_team,
 )

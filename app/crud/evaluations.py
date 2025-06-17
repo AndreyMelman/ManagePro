@@ -11,7 +11,10 @@ from core.models import (
 from core.schemas.evaluation import (
     EvaluationCreateSchema,
 )
-from crud.validators.evaluation_validators import already_estimated, is_task_completed
+from api.api_v1.validators.evaluation_validators import (
+    already_estimated,
+    is_task_completed,
+)
 
 
 class EvaluationService:
