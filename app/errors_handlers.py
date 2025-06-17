@@ -5,7 +5,6 @@ from exceptions.evaluation_exceptions import (
     DuplicateEstimateError,
     TaskNotCompletedError,
 )
-from exceptions.meeting_exceptions import MeetingTimeConflictError
 from exceptions.role_exceptions import RoleError
 from exceptions.team_exceptions import (
     TeamAccessDeniedError,
@@ -26,7 +25,6 @@ from exceptions.user_exceptions import (
     UserNotFoundError,
     UserAlreadyInTeamError,
     UserNotInTeamError,
-    UserCannotChangeRole,
 )
 
 
@@ -136,16 +134,6 @@ def register_errors_handlers(main_app: FastAPI) -> None:
         return ORJSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": "У пользователя нет команды"},
-        )
-
-    @main_app.exception_handler(UserCannotChangeRole)
-    async def handle_user_cannot_change_role(
-        request: Request,
-        exc: UserCannotChangeRole,
-    ) -> ORJSONResponse:
-        return ORJSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={"message": "Суперпользователь не может изменить свою роль"},
         )
 
     @main_app.exception_handler(TaskPermissionError)

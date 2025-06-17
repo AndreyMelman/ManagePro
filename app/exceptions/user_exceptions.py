@@ -12,7 +12,3 @@ class UserAlreadyInTeamError(ServiceError):
 
 class UserNotInTeamError(ServiceError):
     pass
-
-
-class UserCannotChangeRole(ServiceError):
-    pass
