@@ -1,10 +1,11 @@
+from fastapi import HTTPException, status
+
 from core.models import User, Team
 
 from exceptions.user_exceptions import (
     UserAlreadyInTeamError,
     UserNotInTeamError,
     UserNotFoundError,
-    UserCannotChangeRole,
 )
 
 
@@ -35,4 +36,7 @@ def disallow_self_role_change(
     current_user: User,
 ) -> None:
     if user.id == current_user.id:
-        raise UserCannotChangeRole()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"message": "Суперпользователь не может изменить свою роль"},
+        )
