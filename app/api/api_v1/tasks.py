@@ -11,8 +11,12 @@ from core.schemas.task import (
     TaskCreateShema,
     TaskUpdateShema,
 )
-from api.docs.teams import (
+from api.docs.tasks import (
     TASK_TAG,
+    GET_TASK,
+    CREATE_TASK,
+    UPDATE_TASK,
+    DELETE_TASK,
 )
 
 router = APIRouter(tags=[TASK_TAG])
@@ -20,7 +24,7 @@ router = APIRouter(tags=[TASK_TAG])
 
 @router.get(
     "/{task_id}",
-    response_model=TaskSchema,
+    **GET_TASK,
 )
 async def get_task(
     task: Task = Depends(get_task_by_id),
@@ -39,7 +43,7 @@ async def get_task(
 
 @router.post(
     "",
-    response_model=TaskSchema,
+    **CREATE_TASK,
 )
 async def create_task(
     crud: TaskServiceDep,
@@ -51,7 +55,7 @@ async def create_task(
 
     Args:
         crud: Сервис для работы с задачами
-        user: Текущий менеджер
+        user: Текущий пользователь
         task_in: Данные для создания задачи
 
     Returns:
@@ -65,7 +69,7 @@ async def create_task(
 
 @router.patch(
     "/{task_id}",
-    response_model=TaskSchema,
+    **UPDATE_TASK,
 )
 async def update_task(
     crud: TaskServiceDep,
@@ -78,7 +82,7 @@ async def update_task(
 
     Args:
         crud: Сервис для работы с задачами
-        user: Текущий менеджер
+        user: Текущий пользователь
         task_update: Данные для обновления задачи
         task: Задача для обновления
 
@@ -95,7 +99,7 @@ async def update_task(
 
 @router.delete(
     "/{task_id}",
-    response_model=TaskSchema,
+    **DELETE_TASK,
 )
 async def delete_task(
     crud: TaskServiceDep,
@@ -107,7 +111,7 @@ async def delete_task(
 
     Args:
         crud: Сервис для работы с задачами
-        user: Текущий менеджер
+        user: Текущий пользователь
         task: Задача для удаления
 
     Returns:

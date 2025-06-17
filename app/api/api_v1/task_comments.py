@@ -8,19 +8,37 @@ from core.schemas.task_comment import (
     TaskCommentSchema,
     TaskCommentUpdateSchema,
 )
+from api.docs.task_comments import (
+    TASK_COMMENT_TAG,
+    GET_TASK_COMMENTS,
+    CREATE_TASK_COMMENT,
+    UPDATE_TASK_COMMENT,
+    DELETE_TASK_COMMENT,
+)
 
-router = APIRouter(tags=["Task Comments"])
+router = APIRouter(tags=[TASK_COMMENT_TAG])
 
 
 @router.get(
     "/{task_id}",
-    response_model=list[TaskCommentSchema],
+    **GET_TASK_COMMENTS,
 )
 async def get_task_comments(
     crud: TaskCommentServiceDep,
     user: CurrentActiveUser,
     task: Task = Depends(get_task_by_id),
 ):
+    """
+    Получить комментарии к задаче.
+
+    Args:
+        crud: Сервис для работы с комментариями
+        user: Текущий пользователь
+        task: Задача
+
+    Returns:
+        list[TaskCommentSchema]: Список комментариев
+    """
     return await crud.get_task_comments(
         task=task,
         user=user,
@@ -29,7 +47,7 @@ async def get_task_comments(
 
 @router.post(
     "/{task_id}",
-    response_model=TaskCommentSchema,
+    **CREATE_TASK_COMMENT,
 )
 async def create_task_comment(
     crud: TaskCommentServiceDep,
@@ -37,6 +55,18 @@ async def create_task_comment(
     comment_in: TaskCommentCreateSchema,
     task: Task = Depends(get_task_by_id),
 ):
+    """
+    Создать комментарий к задаче.
+
+    Args:
+        crud: Сервис для работы с комментариями
+        user: Текущий пользователь
+        comment_in: Данные для создания комментария
+        task: Задача
+
+    Returns:
+        TaskCommentSchema: Созданный комментарий
+    """
     return await crud.create_task_comment(
         task=task,
         user=user,
@@ -46,7 +76,7 @@ async def create_task_comment(
 
 @router.put(
     "/{task_id}",
-    response_model=TaskCommentSchema,
+    **UPDATE_TASK_COMMENT,
 )
 async def update_task_comment(
     crud: TaskCommentServiceDep,
@@ -54,6 +84,18 @@ async def update_task_comment(
     comment_update: TaskCommentUpdateSchema,
     comment: TaskComment = Depends(get_task_comment_by_id),
 ):
+    """
+    Обновить комментарий.
+
+    Args:
+        crud: Сервис для работы с комментариями
+        user: Текущий пользователь
+        comment_update: Данные для обновления комментария
+        comment: Комментарий для обновления
+
+    Returns:
+        TaskCommentSchema: Обновленный комментарий
+    """
     return await crud.update_task_comment(
         comment=comment,
         user=user,
@@ -61,12 +103,26 @@ async def update_task_comment(
     )
 
 
-@router.delete("/{task_id}")
+@router.delete(
+    "/{task_id}",
+    **DELETE_TASK_COMMENT,
+)
 async def delete_task_comment(
     crud: TaskCommentServiceDep,
     user: CurrentActiveUser,
     comment: TaskComment = Depends(get_task_comment_by_id),
 ):
+    """
+    Удалить комментарий.
+
+    Args:
+        crud: Сервис для работы с комментариями
+        user: Текущий пользователь
+        comment: Комментарий для удаления
+
+    Returns:
+        None
+    """
     return await crud.delete_task_comment(
         comment=comment,
         user=user,

@@ -31,11 +31,19 @@ from exceptions.meeting_exceptions import (
     MeetingNotFoundError,
     MeetingPermissionError,
 )
+from api.docs.meetings import (
+    MEETING_TAG,
+    GET_USER_MEETINGS,
+    GET_MEETING,
+    CREATE_MEETING,
+    UPDATE_MEETING,
+    CANCEL_MEETING,
+)
 
-router = APIRouter(tags=["Meetings"])
+router = APIRouter(tags=[MEETING_TAG])
 
 
-@router.get("", response_model=list[MeetingSchema])
+@router.get("", **GET_USER_MEETINGS)
 async def get_user_meetings(
     crud: MeetingServiceDep,
     user: CurrentActiveUser,
@@ -43,6 +51,19 @@ async def get_user_meetings(
     limit: Annotated[int, Query()],
     include_cancelled: bool = False,
 ):
+    """
+    Получить встречи пользователя.
+
+    Args:
+        crud: Сервис для работы с встречами
+        user: Текущий пользователь
+        skip: Количество пропускаемых записей
+        limit: Максимальное количество записей
+        include_cancelled: Включить отмененные встречи
+
+    Returns:
+        list[MeetingSchema]: Список встреч
+    """
     ensure_user_has_team(user)
     ensure_user_role(
         user,
@@ -56,23 +77,42 @@ async def get_user_meetings(
     )
 
 
-@router.get("/{meeting_id}", response_model=MeetingSchema)
+@router.get("/{meeting_id}", **GET_MEETING)
 async def get_meeting(
     meeting: Meeting = Depends(get_meeting_by_id),
 ):
+    """
+    Получить встречу.
+
+    Args:
+        meeting: Встреча
+
+    Returns:
+        MeetingSchema: Информация о встрече
+    """
     return meeting
 
 
 @router.post(
     "/meetings",
-    response_model=MeetingSchema,
-    status_code=status.HTTP_201_CREATED,
+    **CREATE_MEETING,
 )
 async def create_meeting(
     crud: MeetingServiceDep,
     meeting_in: MeetingCreateSchema,
     user: CurrentActiveUser,
 ):
+    """
+    Создать встречу.
+
+    Args:
+        crud: Сервис для работы с встречами
+        meeting_in: Данные для создания встречи
+        user: Текущий пользователь
+
+    Returns:
+        MeetingSchema: Созданная встреча
+    """
     try:
         ensure_user_has_team(user)
         ensure_user_role(
@@ -93,13 +133,25 @@ async def create_meeting(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.patch("/{meeting_id}", response_model=MeetingSchema)
+@router.patch("/{meeting_id}", **UPDATE_MEETING)
 async def update_meeting(
     crud: MeetingServiceDep,
     meeting_update: MeetingUpdateSchema,
     user: CurrentActiveUser,
     meeting: Meeting = Depends(get_meeting_by_id),
 ):
+    """
+    Обновить встречу.
+
+    Args:
+        crud: Сервис для работы с встречами
+        meeting_update: Данные для обновления встречи
+        user: Текущий пользователь
+        meeting: Встреча для обновления
+
+    Returns:
+        MeetingSchema: Обновленная встреча
+    """
     ensure_user_has_team(user)
     ensure_user_role(
         user,
@@ -117,12 +169,23 @@ async def update_meeting(
     )
 
 
-@router.delete("/{meeting_id}", response_model=MeetingSchema)
+@router.delete("/{meeting_id}", **CANCEL_MEETING)
 async def cancel_meeting(
     crud: MeetingServiceDep,
     user: CurrentActiveUser,
     meeting: Meeting = Depends(get_meeting_by_id),
 ) -> MeetingSchema:
+    """
+    Отменить встречу.
+
+    Args:
+        crud: Сервис для работы с встречами
+        user: Текущий пользователь
+        meeting: Встреча для отмены
+
+    Returns:
+        MeetingSchema: Отмененная встреча
+    """
     ensure_user_has_team(user)
     ensure_user_role(
         user,
