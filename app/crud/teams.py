@@ -95,12 +95,12 @@ class TeamService:
     async def add_user_to_team(
         self,
         team: Team,
-        user: User,
+        current_user: User,
         user_id: int,
     ) -> None:
         user = await self._get_user(user_id)
-        check_team_admin(user, team)
-        ensure_user_not_in_team(user)
+        check_team_admin(current_user, team)
+        ensure_user_not_in_team(current_user)
 
         user.team_id = team.id
         await self.session.commit()
@@ -108,14 +108,14 @@ class TeamService:
     async def update_user_team_role(
         self,
         team: Team,
-        user: User,
+        current_user: User,
         role_data: UpdateRoleRequest,
         user_id: int,
     ) -> None:
-        current_user = await self._get_user(user_id)
+        user = await self._get_user(user_id)
 
-        check_team_admin(user, team)
-        ensure_user_in_team(current_user, team)
+        check_team_admin(current_user, team)
+        ensure_user_in_team(user, team)
         disallow_admin_assignment(role_data)
 
         user.role = role_data.role
@@ -124,12 +124,12 @@ class TeamService:
     async def remove_user_from_team(
         self,
         team: Team,
-        user: User,
+        current_user: User,
         user_id: int,
     ) -> None:
         user = await self._get_user(user_id)
 
-        validate_team_access(user, team)
+        validate_team_access(current_user, team)
         ensure_user_in_team(user, team)
         remove_team_admin(user, team)
 
