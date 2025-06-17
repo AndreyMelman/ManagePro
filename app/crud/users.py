@@ -19,18 +19,6 @@ class UserService:
         role_data: UpdateRoleRequest,
         user_id: int,
     ) -> None:
-        """
-        Обновить роль пользователя.
-
-        Args:
-            current_user: Текущий администратор команды
-            role_data: Команда где нужно обновить роль пользователя
-            user_id: ID пользователя
-
-        Raises:
-            ensure_user_exists: Если пользователь не состоит в команде
-            disallow_self_role_change: Если пользователь - это администратор
-        """
         user = await self.session.get(User, user_id)
 
         ensure_user_exists(user)
