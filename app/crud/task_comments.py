@@ -17,9 +17,9 @@ class TaskCommentService:
     async def get_task_comments(
         self,
         task: Task,
-        current_user: User,
+        user: User,
     ) -> list[TaskComment]:
-        check_user_command(user=current_user, task=task)
+        check_user_command(user=user, task=task)
 
         stmt = (
             select(TaskComment)
@@ -35,10 +35,10 @@ class TaskCommentService:
     async def get_task_comment(
         self,
         task: Task,
-        current_user: User,
+        user: User,
         comment_id: int,
     ) -> TaskComment:
-        check_user_command(user=current_user, task=task)
+        check_user_command(user=user, task=task)
         stmt = select(TaskComment).where(
             TaskComment.task_id == task.id,
             TaskComment.id == comment_id,
@@ -50,14 +50,14 @@ class TaskCommentService:
     async def create_task_comment(
         self,
         task: Task,
-        current_user: User,
+        user: User,
         comment_in: TaskCommentCreateSchema,
     ) -> TaskComment:
 
         comment = TaskComment(
             **comment_in.model_dump(),
             task_id=task.id,
-            user_id=current_user.id,
+            user_id=user.id,
         )
 
         self.session.add(comment)
@@ -69,10 +69,10 @@ class TaskCommentService:
     async def update_task_comment(
         self,
         comment: TaskComment,
-        current_user: User,
+        user: User,
         comment_update: TaskCommentUpdateSchema,
     ) -> TaskComment:
-        check_task_comment_owner(current_user, comment)
+        check_task_comment_owner(user, comment)
 
         update_data = comment_update.model_dump()
         for name, value in update_data.items():
@@ -86,9 +86,9 @@ class TaskCommentService:
     async def delete_task_comment(
         self,
         comment: TaskComment,
-        current_user: User,
+        user: User,
     ) -> None:
-        check_task_comment_owner(current_user, comment)
+        check_task_comment_owner(user, comment)
 
         await self.session.delete(comment)
         await self.session.commit()

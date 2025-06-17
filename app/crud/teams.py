@@ -42,11 +42,11 @@ class TeamService:
     async def get_team(
         self,
         team_id: int,
-        current_user: User,
+        user: User,
     ) -> Team:
         stmt = select(Team).where(
             Team.id == team_id,
-            Team.admin_id == current_user.id,
+            Team.admin_id == user.id,
         )
         result: Result = await self.session.execute(stmt)
         team = result.scalars().first()
@@ -55,10 +55,10 @@ class TeamService:
     async def get_team_with_users(
         self,
         team: Team,
-        current_user: User,
+        user: User,
         role_filter: UserRole,
     ) -> Team:
-        validate_team_access(current_user, team)
+        validate_team_access(user, team)
 
         stmt = select(Team).where(Team.id == team.id).options(selectinload(Team.users))
 
@@ -73,17 +73,17 @@ class TeamService:
     async def create_team(
         self,
         team_in: TeamCreateSchema,
-        current_user: User,
+        user: User,
     ) -> Team:
-        ensure_user_is_admin(current_user)
-        ensure_user_not_in_team(current_user)
+        ensure_user_is_admin(user)
+        ensure_user_not_in_team(user)
 
-        team = Team(**team_in.model_dump(), admin_id=current_user.id)
+        team = Team(**team_in.model_dump(), admin_id=user.id)
         try:
             self.session.add(team)
             await self.session.flush()
 
-            current_user.team_id = team.id
+            user.team_id = team.id
             await self.session.commit()
 
         except IntegrityError:
@@ -95,11 +95,11 @@ class TeamService:
     async def add_user_to_team(
         self,
         team: Team,
-        current_user: User,
+        user: User,
         user_id: int,
     ) -> None:
         user = await self._get_user(user_id)
-        check_team_admin(current_user, team)
+        check_team_admin(user, team)
         ensure_user_not_in_team(user)
 
         user.team_id = team.id
@@ -108,14 +108,14 @@ class TeamService:
     async def update_user_team_role(
         self,
         team: Team,
-        current_user: User,
+        user: User,
         role_data: UpdateRoleRequest,
         user_id: int,
     ) -> None:
-        user = await self._get_user(user_id)
+        current_user = await self._get_user(user_id)
 
-        check_team_admin(current_user, team)
-        ensure_user_in_team(user, team)
+        check_team_admin(user, team)
+        ensure_user_in_team(current_user, team)
         disallow_admin_assignment(role_data)
 
         user.role = role_data.role
@@ -124,12 +124,12 @@ class TeamService:
     async def remove_user_from_team(
         self,
         team: Team,
-        current_user: User,
+        user: User,
         user_id: int,
     ) -> None:
         user = await self._get_user(user_id)
 
-        validate_team_access(current_user, team)
+        validate_team_access(user, team)
         ensure_user_in_team(user, team)
         remove_team_admin(user, team)
 

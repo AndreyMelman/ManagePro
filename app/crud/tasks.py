@@ -44,13 +44,13 @@ class TaskService:
 
     async def get_task(
         self,
-        current_user: User,
+        user: User,
         task_id: int,
     ) -> Task | None:
 
         stmt = select(Task).where(
             Task.id == task_id,
-            Task.team_id == current_user.team_id,
+            Task.team_id == user.team_id,
         )
         result: Result = await self.session.execute(stmt)
         task = result.scalars().first()
@@ -58,22 +58,22 @@ class TaskService:
 
     async def create_task(
         self,
-        current_user: User,
+        user: User,
         task_in: TaskCreateShema,
     ) -> Task:
-        ensure_user_has_team(current_user)
+        ensure_user_has_team(user)
 
         if task_in.assignee_id is not None:
             assignee = await self._get_team_user_by_id(
-                task_in.assignee_id, current_user.team_id
+                task_in.assignee_id, user.team_id
             )
             if assignee is None:
                 raise InvalidAssigneeError()
 
         task = Task(
             **task_in.model_dump(),
-            creator_id=current_user.id,
-            team_id=current_user.team_id,
+            creator_id=user.id,
+            team_id=user.team_id,
         )
         self.session.add(task)
         await self.session.commit()
@@ -84,18 +84,18 @@ class TaskService:
     async def update_task(
         self,
         task: Task,
-        current_user: User,
+        user: User,
         task_update: TaskUpdateShema,
         partial: bool = False,
     ) -> Task:
-        check_task_owner(current_user, task)
+        check_task_owner(user, task)
 
         update_data = task_update.model_dump(exclude_unset=partial)
 
         assignee_id = update_data.get("assignee_id")
         if assignee_id is not None:
             assignee = await self._get_user_by_id(assignee_id)
-            if not assignee or assignee.team_id != current_user.team_id:
+            if not assignee or assignee.team_id != user.team_id:
                 raise InvalidAssigneeError()
 
         for name, value in update_data.items():
@@ -109,9 +109,9 @@ class TaskService:
     async def delete_task(
         self,
         task: Task,
-        current_user: User,
+        user: User,
     ) -> None:
-        check_task_owner(current_user, task)
+        check_task_owner(user, task)
 
         await self.session.delete(task)
         await self.session.commit()
