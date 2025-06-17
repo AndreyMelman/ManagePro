@@ -18,12 +18,12 @@ router = APIRouter(tags=["Task Comments"])
 )
 async def get_task_comments(
     crud: TaskCommentServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
     task: Task = Depends(get_task_by_id),
 ):
     return await crud.get_task_comments(
         task=task,
-        current_user=current_user,
+        user=user,
     )
 
 
@@ -33,13 +33,13 @@ async def get_task_comments(
 )
 async def create_task_comment(
     crud: TaskCommentServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
     comment_in: TaskCommentCreateSchema,
     task: Task = Depends(get_task_by_id),
 ):
     return await crud.create_task_comment(
         task=task,
-        current_user=current_user,
+        user=user,
         comment_in=comment_in,
     )
 
@@ -50,13 +50,13 @@ async def create_task_comment(
 )
 async def update_task_comment(
     crud: TaskCommentServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
     comment_update: TaskCommentUpdateSchema,
     comment: TaskComment = Depends(get_task_comment_by_id),
 ):
     return await crud.update_task_comment(
         comment=comment,
-        current_user=current_user,
+        user=user,
         comment_update=comment_update,
     )
 
@@ -64,10 +64,10 @@ async def update_task_comment(
 @router.delete("/{task_id}")
 async def delete_task_comment(
     crud: TaskCommentServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
     comment: TaskComment = Depends(get_task_comment_by_id),
 ):
     return await crud.delete_task_comment(
         comment=comment,
-        current_user=current_user,
+        user=user,
     )

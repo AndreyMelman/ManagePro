@@ -3,11 +3,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.params import Query
+from sqlalchemy.testing.suite.test_reflection import users
 
 from api.dependencies.load_by_id import get_task_by_id
 from api.dependencies.params import (
     EvaluationServiceDep,
-    CurrentActiveManager,
     CurrentActiveUser,
 )
 from core.models import Task
@@ -23,20 +23,20 @@ router = APIRouter(tags=["Evaluations"])
 @router.get("", response_model=list[EvaluationBaseSchema])
 async def get_evaluations(
     crud: EvaluationServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
 ):
-    return await crud.get_evaluations(current_user)
+    return await crud.get_evaluations(user)
 
 
 @router.get("/average")
 async def get_average_score(
     crud: EvaluationServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
     start_date: Annotated[datetime | None, Query()] = None,
     end_date: Annotated[datetime | None, Query()] = None,
 ):
     return await crud.get_average_score(
-        current_user=current_user,
+        user=user,
         start_date=start_date,
         end_date=end_date,
     )
@@ -48,7 +48,7 @@ async def get_average_score(
 )
 async def create_evaluation(
     crud: EvaluationServiceDep,
-    current_user: CurrentActiveManager,
+    user: CurrentActiveUser,
     evaluation_in: EvaluationCreateSchema,
     task: Task = Depends(get_task_by_id),
 ):
@@ -57,7 +57,7 @@ async def create_evaluation(
 
     Args:
         crud: Сервис для работы с оценками
-        current_user: Текущий администратор
+        user: Текущий администратор
         evaluation_in: Данные для создания оценки
         task
 
@@ -66,6 +66,6 @@ async def create_evaluation(
     """
     return await crud.create_evaluation(
         evaluation_in=evaluation_in,
-        current_user=current_user,
+        user=user,
         task=task,
     )

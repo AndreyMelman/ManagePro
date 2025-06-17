@@ -8,7 +8,6 @@ from fastapi import (
 from api.dependencies.load_by_id import get_team_by_id
 from api.dependencies.params import (
     TeamServiceDep,
-    CurrentActiveAdmin,
     CurrentActiveUser,
 )
 from core.models import Team
@@ -41,7 +40,7 @@ UserID = Annotated[UserIdType, Path()]
 )
 async def get_team_with_users(
     crud: TeamServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
     team: Team = Depends(get_team_by_id),
     role_filter: Annotated[UserRole, Query()] = None,
 ):
@@ -50,7 +49,7 @@ async def get_team_with_users(
 
     Args:
         crud: Сервис для работы с командами
-        current_user: Текущий пользователь
+        user: Текущий пользователь
         team: ID команды
         role_filter: Фильтрация по роли
 
@@ -59,7 +58,7 @@ async def get_team_with_users(
     """
     return await crud.get_team_with_users(
         team=team,
-        current_user=current_user,
+        user=user,
         role_filter=role_filter,
     )
 
@@ -89,7 +88,7 @@ async def get_team(
 )
 async def create_team(
     crud: TeamServiceDep,
-    current_user: CurrentActiveAdmin,
+    user: CurrentActiveUser,
     team_in: TeamCreateSchema,
 ):
     """
@@ -97,7 +96,7 @@ async def create_team(
 
     Args:
         crud: Сервис для работы с командами
-        current_user: Текущий пользователь
+        user: Текущий пользователь
         team_in: Данные для создания команды
 
     Returns:
@@ -105,14 +104,14 @@ async def create_team(
     """
     return await crud.create_team(
         team_in=team_in,
-        current_user=current_user,
+        user=user,
     )
 
 
 @router.post("/{team_id}/user/{user_id}", **ADD_USER_TO_TEAM)
 async def add_user_to_team(
     crud: TeamServiceDep,
-    current_user: CurrentActiveAdmin,
+    user: CurrentActiveUser,
     user_id: UserID,
     team: Team = Depends(get_team_by_id),
 ):
@@ -121,14 +120,14 @@ async def add_user_to_team(
 
     Args:
         crud: Сервис для работы с командами
-        current_user: Текущий администратор
+        user: Текущий администратор
         team: ID команды
         user_id: ID пользователя
     """
     return await crud.add_user_to_team(
         team=team,
         user_id=user_id,
-        current_user=current_user,
+        user=user,
     )
 
 
@@ -138,7 +137,7 @@ async def add_user_to_team(
 )
 async def update_user_team_role(
     crud: TeamServiceDep,
-    current_user: CurrentActiveAdmin,
+    user: CurrentActiveUser,
     role_data: UpdateRoleRequest,
     user_id: UserID,
     team: Team = Depends(get_team_by_id),
@@ -148,14 +147,14 @@ async def update_user_team_role(
 
     Args:
         crud: Сервис для работы с командами
-        current_user: Текущий пользователь
+        user: Текущий пользователь
         role_data: Данные для обновления роли
         team: ID команды
         user_id: ID пользователя
     """
     return await crud.update_user_team_role(
         team=team,
-        current_user=current_user,
+        user=user,
         role_data=role_data,
         user_id=user_id,
     )
@@ -167,7 +166,7 @@ async def update_user_team_role(
 )
 async def remove_user_from_team(
     crud: TeamServiceDep,
-    current_user: CurrentActiveAdmin,
+    user: CurrentActiveUser,
     user_id: UserID,
     team: Team = Depends(get_team_by_id),
 ):
@@ -176,12 +175,12 @@ async def remove_user_from_team(
 
     Args:
         crud: Сервис для работы с командами
-        current_user: Текущий администратор
+        user: Текущий администратор
         team: ID команды
         user_id: ID пользователя
     """
     return await crud.remove_user_from_team(
-        current_user=current_user,
+        user=user,
         team=team,
         user_id=user_id,
     )

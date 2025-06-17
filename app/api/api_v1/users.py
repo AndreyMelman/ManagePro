@@ -43,7 +43,7 @@ async def update_user_role(
     Args:
         crud: Сервис для работы с командами
         user_id: Текущий пользователь
-        role_data:
+        role_data: Схема изменения роли
         admin: Данные для создания команды
 
     Returns:

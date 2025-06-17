@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from api.dependencies.load_by_id import get_task_by_id
 from api.dependencies.params import (
     TaskServiceDep,
-    CurrentActiveManager,
+    CurrentActiveUser,
 )
 from core.models import Task
 from core.schemas.task import (
@@ -25,6 +25,15 @@ router = APIRouter(tags=[TASK_TAG])
 async def get_task(
     task: Task = Depends(get_task_by_id),
 ):
+    """
+    Получить задачу по ID.
+
+    Args:
+        task: Задача
+
+    Returns:
+        TaskSchema: Одна задача
+    """
     return task
 
 
@@ -34,11 +43,22 @@ async def get_task(
 )
 async def create_task(
     crud: TaskServiceDep,
-    current_user: CurrentActiveManager,
+    user: CurrentActiveUser,
     task_in: TaskCreateShema,
 ):
+    """
+    Создать новую задачу.
+
+    Args:
+        crud: Сервис для работы с задачами
+        user: Текущий менеджер
+        task_in: Данные для создания задачи
+
+    Returns:
+        TaskSchema: Созданная задача
+    """
     return await crud.create_task(
-        current_user=current_user,
+        user=user,
         task_in=task_in,
     )
 
@@ -49,12 +69,24 @@ async def create_task(
 )
 async def update_task(
     crud: TaskServiceDep,
-    current_user: CurrentActiveManager,
+    user: CurrentActiveUser,
     task_update: TaskUpdateShema,
     task: Task = Depends(get_task_by_id),
 ):
+    """
+    Обновить существующую задачу.
+
+    Args:
+        crud: Сервис для работы с задачами
+        user: Текущий менеджер
+        task_update: Данные для обновления задачи
+        task: Задача для обновления
+
+    Returns:
+        TaskSchema: Обновленная задача
+    """
     return await crud.update_task(
-        current_user=current_user,
+        user=user,
         task=task,
         task_update=task_update,
         partial=True,
@@ -67,10 +99,21 @@ async def update_task(
 )
 async def delete_task(
     crud: TaskServiceDep,
-    current_user: CurrentActiveManager,
+    user: CurrentActiveUser,
     task: Task = Depends(get_task_by_id),
 ):
+    """
+    Удалить задачу.
+
+    Args:
+        crud: Сервис для работы с задачами
+        user: Текущий менеджер
+        task: Задача для удаления
+
+    Returns:
+        TaskSchema: Удаленная задача
+    """
     return await crud.delete_task(
         task=task,
-        current_user=current_user,
+        user=user,
     )
