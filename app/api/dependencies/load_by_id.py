@@ -3,7 +3,6 @@ from fastapi import Path, HTTPException, status
 from api.dependencies.params import (
     TaskServiceDep,
     TeamServiceDep,
-    CurrentActiveAdmin,
     CurrentActiveUser,
     TaskCommentServiceDep,
     MeetingServiceDep,
@@ -31,7 +30,7 @@ async def get_task_by_id(
 async def get_team_by_id(
     team_id: Annotated[int, Path()],
     crud: TeamServiceDep,
-    current_user: CurrentActiveAdmin,
+    current_user: CurrentActiveUser,
 ) -> Team:
     team = await crud.get_team(
         current_user=current_user,
