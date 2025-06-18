@@ -1,5 +1,12 @@
 from typing import Annotated
-from fastapi import Path, HTTPException, status
+from fastapi import (
+    Path,
+    HTTPException,
+    status,
+)
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.dependencies.params import (
     TaskServiceDep,
     TeamServiceDep,
@@ -7,16 +14,37 @@ from api.dependencies.params import (
     TaskCommentServiceDep,
     MeetingServiceDep,
 )
-from core.models import Task, Team, TaskComment, Meeting
+from core.models import (
+    Task,
+    Team,
+    TaskComment,
+    Meeting,
+    User,
+)
+
+
+async def get_user_by_id(
+    user_id: Annotated[int, Path()],
+    session: AsyncSession,
+) -> User:
+    stmt = select(User).where(User.id == user_id)
+    result = await session.execute(stmt)
+    user = result.scalar_one_or_none()
+    if user is not None:
+        return user
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail={"message": "Пользователь не найден"},
+    )
 
 
 async def get_task_by_id(
     task_id: Annotated[int, Path()],
     crud: TaskServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
 ) -> Task:
     task = await crud.get_task(
-        current_user=current_user,
+        user=user,
         task_id=task_id,
     )
     if task is not None:
@@ -30,10 +58,10 @@ async def get_task_by_id(
 async def get_team_by_id(
     team_id: Annotated[int, Path()],
     crud: TeamServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
 ) -> Team:
     team = await crud.get_team(
-        current_user=current_user,
+        user=user,
         team_id=team_id,
     )
     if team is not None:
@@ -48,11 +76,11 @@ async def get_task_comment_by_id(
     task_id: Annotated[int, Path()],
     comment_id: Annotated[int, Path()],
     crud: TaskCommentServiceDep,
-    current_user: CurrentActiveUser,
+    user: CurrentActiveUser,
 ) -> TaskComment:
     comment = await crud.get_task_comment(
         task_id=task_id,
-        current_user=current_user,
+        user=user,
         comment_id=comment_id,
     )
     if comment is not None:
