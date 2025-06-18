@@ -3,44 +3,16 @@ from sqlalchemy import (
     select,
     Result,
 )
-from api.api_v1.validators.task_validators import (
-    ensure_user_has_team,
-    check_task_owner,
-)
 from core.models import (
     User,
     Task,
 )
-from core.schemas.task import (
-    TaskCreateShema,
-    TaskUpdateShema,
-)
-from exceptions.task_exceptions import InvalidAssigneeError
+from core.schemas.task import TaskCreateShema
 
 
 class TaskService:
     def __init__(self, session: AsyncSession):
         self.session = session
-
-    async def _get_user_by_id(
-        self,
-        user_id: int,
-    ) -> User | None:
-        stmt = select(User).where(User.id == user_id)
-        result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
-
-    async def _get_team_user_by_id(
-        self,
-        user_id: int,
-        team_id: int,
-    ) -> User | None:
-        stmt = select(User).where(
-            User.id == user_id,
-            User.team_id == team_id,
-        )
-        result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
 
     async def get_task(
         self,
@@ -61,15 +33,6 @@ class TaskService:
         user: User,
         task_in: TaskCreateShema,
     ) -> Task:
-        ensure_user_has_team(user)
-
-        if task_in.assignee_id is not None:
-            assignee = await self._get_team_user_by_id(
-                task_in.assignee_id, user.team_id
-            )
-            if assignee is None:
-                raise InvalidAssigneeError()
-
         task = Task(
             **task_in.model_dump(),
             creator_id=user.id,
@@ -84,22 +47,14 @@ class TaskService:
     async def update_task(
         self,
         task: Task,
-        user: User,
-        task_update: TaskUpdateShema,
-        partial: bool = False,
+        update_data: dict,
+        assignee: User | None = None,
     ) -> Task:
-        check_task_owner(user, task)
-
-        update_data = task_update.model_dump(exclude_unset=partial)
-
-        assignee_id = update_data.get("assignee_id")
-        if assignee_id is not None:
-            assignee = await self._get_user_by_id(assignee_id)
-            if not assignee or assignee.team_id != user.team_id:
-                raise InvalidAssigneeError()
-
         for name, value in update_data.items():
             setattr(task, name, value)
+
+        if assignee:
+            task.assignee_id = assignee.id
 
         await self.session.commit()
         await self.session.refresh(task)
@@ -109,9 +64,6 @@ class TaskService:
     async def delete_task(
         self,
         task: Task,
-        user: User,
     ) -> None:
-        check_task_owner(user, task)
-
         await self.session.delete(task)
         await self.session.commit()

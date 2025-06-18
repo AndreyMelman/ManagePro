@@ -11,10 +11,7 @@ from core.models import (
 from core.schemas.evaluation import (
     EvaluationCreateSchema,
 )
-from api.api_v1.validators.evaluation_validators import (
-    already_estimated,
-    is_task_completed,
-)
+from api.api_v1.validators.evaluation_validators import already_estimated
 
 
 class EvaluationService:
@@ -59,8 +56,6 @@ class EvaluationService:
         current_user: User,
         task: Task,
     ) -> Evaluation:
-        is_task_completed(task=task)
-
         stmt = select(Evaluation).where(
             Evaluation.task_id == task.id,
             Evaluation.evaluator_id == current_user.id,

@@ -1,11 +1,14 @@
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import Task, User, TaskComment
-from core.schemas.task_comment import TaskCommentCreateSchema, TaskCommentUpdateSchema
-from api.api_v1.validators.task_validators import (
-    check_user_command,
-    check_task_comment_owner,
+from core.models import (
+    Task,
+    User,
+    TaskComment,
+)
+from core.schemas.task_comment import (
+    TaskCommentCreateSchema,
+    TaskCommentUpdateSchema,
 )
 
 
@@ -16,10 +19,7 @@ class TaskCommentService:
     async def get_task_comments(
         self,
         task: Task,
-        user: User,
     ) -> list[TaskComment]:
-        check_user_command(user=user, task=task)
-
         stmt = (
             select(TaskComment)
             .where(TaskComment.task_id == task.id)
@@ -34,10 +34,8 @@ class TaskCommentService:
     async def get_task_comment(
         self,
         task: Task,
-        user: User,
         comment_id: int,
     ) -> TaskComment:
-        check_user_command(user=user, task=task)
         stmt = select(TaskComment).where(
             TaskComment.task_id == task.id,
             TaskComment.id == comment_id,
@@ -52,7 +50,6 @@ class TaskCommentService:
         user: User,
         comment_in: TaskCommentCreateSchema,
     ) -> TaskComment:
-
         comment = TaskComment(
             **comment_in.model_dump(),
             task_id=task.id,
@@ -68,11 +65,8 @@ class TaskCommentService:
     async def update_task_comment(
         self,
         comment: TaskComment,
-        user: User,
         comment_update: TaskCommentUpdateSchema,
     ) -> TaskComment:
-        check_task_comment_owner(user, comment)
-
         update_data = comment_update.model_dump()
         for name, value in update_data.items():
             setattr(comment, name, value)
@@ -85,9 +79,6 @@ class TaskCommentService:
     async def delete_task_comment(
         self,
         comment: TaskComment,
-        user: User,
     ) -> None:
-        check_task_comment_owner(user, comment)
-
         await self.session.delete(comment)
         await self.session.commit()

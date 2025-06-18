@@ -1,8 +1,24 @@
-from fastapi import APIRouter, Depends
+from fastapi import (
+    APIRouter,
+    Depends,
+)
 
-from api.dependencies.load_by_id import get_task_by_id, get_task_comment_by_id
-from api.dependencies.params import CurrentActiveUser, TaskCommentServiceDep
-from core.models import Task, TaskComment
+from api.api_v1.validators.task_validators import (
+    check_user_command,
+    check_task_comment_owner,
+)
+from api.dependencies.load_by_id import (
+    get_task_by_id,
+    get_task_comment_by_id,
+)
+from api.dependencies.params import (
+    CurrentActiveUser,
+    TaskCommentServiceDep,
+)
+from core.models import (
+    Task,
+    TaskComment,
+)
 from core.schemas.task_comment import (
     TaskCommentCreateSchema,
     TaskCommentSchema,
@@ -39,10 +55,9 @@ async def get_task_comments(
     Returns:
         list[TaskCommentSchema]: Список комментариев
     """
-    return await crud.get_task_comments(
-        task=task,
-        user=user,
-    )
+    check_user_command(user, task)
+
+    return await crud.get_task_comments(task)
 
 
 @router.post(
@@ -67,6 +82,8 @@ async def create_task_comment(
     Returns:
         TaskCommentSchema: Созданный комментарий
     """
+    check_user_command(user, task)
+
     return await crud.create_task_comment(
         task=task,
         user=user,
@@ -96,9 +113,10 @@ async def update_task_comment(
     Returns:
         TaskCommentSchema: Обновленный комментарий
     """
+    check_task_comment_owner(user, comment)
+
     return await crud.update_task_comment(
         comment=comment,
-        user=user,
         comment_update=comment_update,
     )
 
@@ -123,7 +141,6 @@ async def delete_task_comment(
     Returns:
         None
     """
-    return await crud.delete_task_comment(
-        comment=comment,
-        user=user,
-    )
+    check_task_comment_owner(user, comment)
+
+    return await crud.delete_task_comment(comment)

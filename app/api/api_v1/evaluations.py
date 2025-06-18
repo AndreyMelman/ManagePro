@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.params import Query
 
+from api.api_v1.validators.evaluation_validators import is_task_completed
 from api.dependencies.load_by_id import get_task_by_id
 from api.dependencies.params import (
     EvaluationServiceDep,
@@ -91,6 +92,8 @@ async def create_evaluation(
     Returns:
         EvaluationSchema: Созданная оценка
     """
+    is_task_completed(task)
+
     return await crud.create_evaluation(
         evaluation_in=evaluation_in,
         user=user,

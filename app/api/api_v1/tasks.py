@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from api.dependencies.load_by_id import get_task_by_id
+from api.api_v1.validators.task_validators import ensure_user_has_team, check_task_owner
+from api.dependencies.load_by_id import get_task_by_id, get_user_by_id
 from api.dependencies.params import (
     TaskServiceDep,
     CurrentActiveUser,
 )
-from core.models import Task
+from core.models import Task, User
 from core.schemas.task import (
     TaskSchema,
     TaskCreateShema,
@@ -18,6 +19,7 @@ from api.docs.tasks import (
     UPDATE_TASK,
     DELETE_TASK,
 )
+from exceptions.task_exceptions import InvalidAssigneeError
 
 router = APIRouter(tags=[TASK_TAG])
 
@@ -61,6 +63,17 @@ async def create_task(
     Returns:
         TaskSchema: Созданная задача
     """
+    ensure_user_has_team(user)
+    if task_in.assignee_id is not None:
+        assignee = await get_user_by_id(task_in.assignee_id, crud.session)
+        if assignee is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "message": "Исполнитель должен быть из той же команды, что и руководитель."
+                },
+            )
+
     return await crud.create_task(
         user=user,
         task_in=task_in,
@@ -73,8 +86,10 @@ async def create_task(
 )
 async def update_task(
     crud: TaskServiceDep,
-    user: CurrentActiveUser,
+    current_user: CurrentActiveUser,
     task_update: TaskUpdateShema,
+    partial: bool = True,
+    assignee: User | None = None,
     task: Task = Depends(get_task_by_id),
 ):
     """
@@ -82,19 +97,35 @@ async def update_task(
 
     Args:
         crud: Сервис для работы с задачами
-        user: Текущий пользователь
+        current_user: Текущий пользователь
         task_update: Данные для обновления задачи
         task: Задача для обновления
+        partial:
+        assignee:
 
     Returns:
         TaskSchema: Обновленная задача
     """
-    return await crud.update_task(
-        user=user,
+    check_task_owner(current_user, task)
+
+    update_data = task_update.model_dump(exclude_unset=partial)
+
+    if "assignee_id" in update_data and update_data["assignee_id"] is not None:
+        assignee = await get_user_by_id(update_data["assignee_id"], crud.session)
+        if assignee.team_id != current_user.team_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "message": "Исполнитель должен быть из той же команды, что и руководитель."
+                },
+            )
+
+    updated_task = await crud.update_task(
         task=task,
-        task_update=task_update,
-        partial=True,
+        update_data=update_data,
+        assignee=assignee,
     )
+    return updated_task
 
 
 @router.delete(
@@ -117,7 +148,5 @@ async def delete_task(
     Returns:
         TaskSchema: Удаленная задача
     """
-    return await crud.delete_task(
-        task=task,
-        user=user,
-    )
+    check_task_owner(user, task)
+    return await crud.delete_task(task=task)

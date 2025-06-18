@@ -5,7 +5,22 @@ from fastapi import (
     Query,
     Depends,
 )
-from api.dependencies.load_by_id import get_team_by_id
+
+from api.api_v1.validators.team_validators import (
+    check_team_admin,
+    disallow_admin_assignment,
+    validate_team_access,
+    remove_team_admin,
+    ensure_user_is_admin,
+)
+from api.api_v1.validators.user_validators import (
+    ensure_user_not_in_team,
+    ensure_user_in_team,
+)
+from api.dependencies.load_by_id import (
+    get_team_by_id,
+    get_user_by_id,
+)
 from api.dependencies.params import (
     TeamServiceDep,
     CurrentActiveUser,
@@ -56,9 +71,10 @@ async def get_team_with_users(
     Returns:
         list[TeamSchema]: Список с одной командой и её пользователями
     """
+    validate_team_access(user, team)
+
     return await crud.get_team_with_users(
         team=team,
-        user=user,
         role_filter=role_filter,
     )
 
@@ -102,6 +118,8 @@ async def create_team(
     Returns:
         TeamSchema: Созданная команда
     """
+    ensure_user_is_admin(user)
+    ensure_user_not_in_team(user)
     return await crud.create_team(
         team_in=team_in,
         user=user,
@@ -111,7 +129,7 @@ async def create_team(
 @router.post("/{team_id}/user/{user_id}", **ADD_USER_TO_TEAM)
 async def add_user_to_team(
     crud: TeamServiceDep,
-    user: CurrentActiveUser,
+    current_user: CurrentActiveUser,
     user_id: UserID,
     team: Team = Depends(get_team_by_id),
 ):
@@ -120,13 +138,16 @@ async def add_user_to_team(
 
     Args:
         crud: Сервис для работы с командами
-        user: Текущий администратор
+        current_user: Текущий администратор
         team: ID команды
         user_id: ID пользователя
     """
+    user = await get_user_by_id(user_id, session=crud.session)
+    check_team_admin(current_user, team)
+    ensure_user_not_in_team(user)
+
     return await crud.add_user_to_team(
         team=team,
-        user_id=user_id,
         user=user,
     )
 
@@ -137,7 +158,7 @@ async def add_user_to_team(
 )
 async def update_user_team_role(
     crud: TeamServiceDep,
-    user: CurrentActiveUser,
+    current_user: CurrentActiveUser,
     role_data: UpdateRoleRequest,
     user_id: UserID,
     team: Team = Depends(get_team_by_id),
@@ -147,16 +168,19 @@ async def update_user_team_role(
 
     Args:
         crud: Сервис для работы с командами
-        user: Текущий пользователь
+        current_user: Текущий пользователь
         role_data: Данные для обновления роли
         team: ID команды
         user_id: ID пользователя
     """
+    user = await get_user_by_id(user_id, session=crud.session)
+    check_team_admin(current_user, team)
+    ensure_user_in_team(user, team)
+    disallow_admin_assignment(role_data)
+
     return await crud.update_user_team_role(
-        team=team,
         user=user,
         role_data=role_data,
-        user_id=user_id,
     )
 
 
@@ -166,7 +190,7 @@ async def update_user_team_role(
 )
 async def remove_user_from_team(
     crud: TeamServiceDep,
-    user: CurrentActiveUser,
+    current_user: CurrentActiveUser,
     user_id: UserID,
     team: Team = Depends(get_team_by_id),
 ):
@@ -175,12 +199,15 @@ async def remove_user_from_team(
 
     Args:
         crud: Сервис для работы с командами
-        user: Текущий администратор
+        current_user: Текущий администратор
         team: ID команды
         user_id: ID пользователя
     """
+    user = await get_user_by_id(user_id, session=crud.session)
+    validate_team_access(current_user, team)
+    ensure_user_in_team(user, team)
+    remove_team_admin(user, team)
+
     return await crud.remove_user_from_team(
         user=user,
-        team=team,
-        user_id=user_id,
     )
