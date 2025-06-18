@@ -99,7 +99,6 @@ async def update_task(
     current_user: CurrentActiveUser,
     task_update: TaskUpdateShema,
     partial: bool = True,
-    assignee: User | None = None,
     task: Task = Depends(get_task_by_id),
 ):
     """
@@ -110,8 +109,7 @@ async def update_task(
         current_user: Текущий пользователь
         task_update: Данные для обновления задачи
         task: Задача для обновления
-        partial:
-        assignee:
+        partial: Флаг частичного обновления
 
     Returns:
         TaskSchema: Обновленная задача
@@ -120,6 +118,7 @@ async def update_task(
 
     update_data = task_update.model_dump(exclude_unset=partial)
 
+    assignee = None
     if "assignee_id" in update_data and update_data["assignee_id"] is not None:
         assignee = await get_user_by_id(update_data["assignee_id"], crud.session)
         if assignee.team_id != current_user.team_id:
