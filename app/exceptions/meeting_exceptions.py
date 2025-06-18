@@ -13,10 +13,6 @@ class MeetingTimeConflictError(ServiceError):
     pass
 
 
-class MeetingParticipantError(ServiceError):
-    pass
-
-
 class MeetingParticipantValidationError(ServiceError):
     def __init__(self, message: str):
         self.message = message

@@ -1,7 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+)
 
-from api.api_v1.validators.task_validators import ensure_user_has_team, check_task_owner
-from api.dependencies.load_by_id import get_task_by_id, get_user_by_id
+from api.api_v1.validators.task_validators import (
+    ensure_user_has_team,
+    check_task_owner,
+)
+from api.dependencies.load_by_id import (
+    get_task_by_id,
+    get_user_by_id,
+)
 from api.dependencies.params import (
     TaskServiceDep,
     CurrentActiveUser,
@@ -19,7 +30,6 @@ from api.docs.tasks import (
     UPDATE_TASK,
     DELETE_TASK,
 )
-from exceptions.task_exceptions import InvalidAssigneeError
 
 router = APIRouter(tags=[TASK_TAG])
 
@@ -149,4 +159,4 @@ async def delete_task(
         TaskSchema: Удаленная задача
     """
     check_task_owner(user, task)
-    return await crud.delete_task(task=task)
+    return await crud.delete_task(task)

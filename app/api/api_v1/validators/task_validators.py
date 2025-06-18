@@ -1,10 +1,12 @@
-from core.models import User, Task, TaskComment
+from fastapi import (
+    HTTPException,
+    status,
+)
 
-from exceptions.task_exceptions import (
-    TaskNotTeamError,
-    TaskPermissionError,
-    TaskCommentPermissionError,
-    TaskCommentOwnerError,
+from core.models import (
+    User,
+    Task,
+    TaskComment,
 )
 
 
@@ -12,7 +14,10 @@ def ensure_user_has_team(
     user: User,
 ) -> None:
     if not user.team_id:
-        raise TaskNotTeamError()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"message": "У пользователя нет команды"},
+        )
 
 
 def check_task_owner(
@@ -20,7 +25,10 @@ def check_task_owner(
     task: Task,
 ) -> None:
     if task.creator_id != user.id:
-        raise TaskPermissionError()
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"message": "Нет прав для обновления задачи другой команды"},
+        )
 
 
 def check_user_command(
@@ -28,7 +36,12 @@ def check_user_command(
     task: Task,
 ) -> None:
     if user.team_id != task.team_id:
-        raise TaskCommentPermissionError()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "message": "Для просмотра комментариев задачи, необходимо быть в группе"
+            },
+        )
 
 
 def check_task_comment_owner(
@@ -36,4 +49,7 @@ def check_task_comment_owner(
     comment: TaskComment,
 ) -> None:
     if comment.user_id != user.id:
-        raise TaskCommentOwnerError()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"message": "Вы можете обновлять только свои комментарии"},
+        )
