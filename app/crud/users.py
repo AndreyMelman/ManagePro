@@ -15,14 +15,8 @@ class UserService:
 
     async def update_user_role(
         self,
-        current_user: User,
+        user: User,
         role_data: UpdateRoleRequest,
-        user_id: int,
     ) -> None:
-        user = await self.session.get(User, user_id)
-
-        ensure_user_exists(user)
-        disallow_self_role_change(user, current_user)
-
         user.role = role_data.role
         await self.session.commit()
