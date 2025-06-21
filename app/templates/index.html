@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}
+ManagePro - Система управления проектами
+{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<div class="gradient-bg">
+  <div class="container py-5">
+    <div class="row align-items-center min-vh-100">
+      <div class="col-lg-8 mx-auto text-center text-white">
+        <h1 class="display-3 fw-bold mb-4">
+          <i class="bi bi-rocket-takeoff me-3"></i>
+          ManagePro
+        </h1>
+        <h2 class="h3 mb-5 opacity-75">
+          Система управления проектами и командами
+        </h2>
+
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="/login" class="btn btn-light btn-lg px-4 py-3">
+            <i class="bi bi-box-arrow-in-right me-2"></i>
+            Войти
+          </a>
+          <a href="/register" class="btn btn-outline-light btn-lg px-4 py-3">
+            <i class="bi bi-person-plus me-2"></i>
+            Зарегистрироваться
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="container py-5">
+  <div class="row">
+    <div class="col-12 text-center mb-5">
+      <h2 class="h2 text-dark mb-3">Что умеет ManagePro</h2>
+      <p class="text-muted lead">Полный набор инструментов для эффективного управления проектами</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Team Management -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="text-center mb-3">
+            <i class="bi bi-people-fill text-primary" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="card-title text-center mb-3">Управление командами</h5>
+          <p class="card-text text-muted text-center">
+            Создание команд, добавление участников, назначение ролей и управление структурой организации
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Management -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="text-center mb-3">
+            <i class="bi bi-list-task text-success" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="card-title text-center mb-3">Управление задачами</h5>
+          <p class="card-text text-muted text-center">
+            Создание задач, назначение исполнителей, отслеживание статуса и дедлайнов
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="text-center mb-3">
+            <i class="bi bi-chat-dots text-info" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="card-title text-center mb-3">Комментарии к задачам</h5>
+          <p class="card-text text-muted text-center">
+            Обсуждение задач, координация работы и обмен информацией между участниками
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Evaluations -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="text-center mb-3">
+            <i class="bi bi-star-fill text-warning" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="card-title text-center mb-3">Система оценок</h5>
+          <p class="card-text text-muted text-center">
+            Оценка выполненных задач руководителем, отслеживание производительности команды
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="text-center mb-3">
+            <i class="bi bi-calendar-event text-danger" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="card-title text-center mb-3">Встречи и календарь</h5>
+          <p class="card-text text-muted text-center">
+            Планирование встреч, управление расписанием и просмотр событий по дням
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profiles -->
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="text-center mb-3">
+            <i class="bi bi-person-badge text-secondary" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="card-title text-center mb-3">Профили пользователей</h5>
+          <p class="card-text text-muted text-center">
+            Управление аккаунтами, ролями и настройками пользователей системы
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA Section -->
+<div class="bg-light py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h3 class="mb-4">Готовы начать?</h3>
+        <p class="text-muted mb-4">Присоединяйтесь к тысячам команд, которые уже используют ManagePro</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="/register" class="btn btn-primary btn-lg">
+            <i class="bi bi-person-plus me-2"></i>
+            Создать аккаунт
+          </a>
+          <a href="/login" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-box-arrow-in-right me-2"></i>
+            Войти в систему
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
