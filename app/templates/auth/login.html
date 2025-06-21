@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Вход - ManagePro{% endblock %}
+{% block body %}
+<div class="gradient-bg d-flex align-items-center justify-content-center py-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4">
+            <div class="text-center mb-4">
+              <h2 class="h3 text-dark mb-0">
+                <i class="bi bi-key-fill text-primary me-2"></i>
+                Вход в систему
+              </h2>
+            </div>
+
+            <form method="post">
+              <div class="mb-3">
+                <label for="email" class="form-label fw-medium text-muted">
+                  <i class="bi bi-envelope me-1"></i>Email
+                </label>
+                <input type="email" class="form-control form-control-lg" id="email" name="email" required
+                  placeholder="Введите ваш email">
+              </div>
+
+              <div class="mb-4">
+                <label for="password" class="form-label fw-medium text-muted">
+                  <i class="bi bi-lock me-1"></i>Пароль
+                </label>
+                <input type="password" class="form-control form-control-lg" id="password" name="password" required
+                  placeholder="Введите пароль">
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Войти
+              </button>
+            </form>
+
+            {% if error %}
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ error }}
+            </div>
+            {% endif %}
+
+            <hr class="my-4">
+
+            <div class="text-center">
+              <p class="text-muted mb-2">
+                Нет аккаунта?
+                <a href="/register" class="text-decoration-none fw-medium">Зарегистрироваться</a>
+              </p>
+              <a href="/" class="text-muted text-decoration-none small">
+                <i class="bi bi-arrow-left me-1"></i>
+                Вернуться на главную
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
