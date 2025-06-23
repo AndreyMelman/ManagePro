@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from core.models import (
     Evaluation,
@@ -26,6 +27,10 @@ class EvaluationService:
             select(Evaluation)
             .where(Evaluation.user_id == current_user.id)
             .order_by(Evaluation.id)
+            .options(
+                selectinload(Evaluation.task),
+                selectinload(Evaluation.evaluator),
+            )
         )
         result = await self.session.execute(stmt)
         evaluations = result.scalars().all()
