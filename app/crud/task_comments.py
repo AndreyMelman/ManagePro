@@ -1,5 +1,6 @@
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from core.models import (
     Task,
@@ -24,6 +25,7 @@ class TaskCommentService:
             select(TaskComment)
             .where(TaskComment.task_id == task.id)
             .order_by(TaskComment.created_at.desc())
+            .options(selectinload(TaskComment.user))
         )
 
         result: Result = await self.session.execute(stmt)
