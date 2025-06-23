@@ -58,7 +58,10 @@ async def login_post(
         return templates.TemplateResponse(
             request=request,
             name="auth/login.html",
-            context={"request": request, "error": "Неверный email или пароль"},
+            context={
+                "request": request,
+                "error": "Неверный email или пароль",
+            },
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
@@ -71,7 +74,10 @@ async def login_post(
         return templates.TemplateResponse(
             request=request,
             name="auth/login.html",
-            context={"request": request, "error": "Неверный email или пароль"},
+            context={
+                "request": request,
+                "error": "Неверный email или пароль",
+            },
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
@@ -169,7 +175,10 @@ async def register_post(
 
 @router.get("/logout")
 async def logout(response: Response):
-    response = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+    response = RedirectResponse(
+        url="/login",
+        status_code=status.HTTP_302_FOUND,
+    )
     response.delete_cookie(key="access_token", path="/")
     return response
 
@@ -230,7 +239,6 @@ async def edit_profile_post(
     access_tokens_db: AccessToken = Depends(get_access_tokens_db),
 ):
     errors = []
-    # Проверка email
     if email != user.email:
         try:
             existing = await user_manager.get_by_email(email)
@@ -238,7 +246,6 @@ async def edit_profile_post(
                 errors.append("Пользователь с таким email уже существует")
         except UserNotExists:
             pass
-    # Проверка пароля
     if password:
         if password != password_confirm:
             errors.append("Пароли не совпадают")
@@ -248,7 +255,6 @@ async def edit_profile_post(
             {"request": request, "user": user, "errors": errors, "email": email},
             status_code=status.HTTP_400_BAD_REQUEST,
         )
-    # Обновление пользователя
     update_data = {}
     if email != user.email:
         update_data["email"] = email
@@ -258,7 +264,6 @@ async def edit_profile_post(
     if update_data:
         user_update = UserUpdate(**update_data)
         await user_manager.update(user_update, user)
-    # Обновим токен, если email изменился
     strategy = authentication_backend.get_strategy(access_tokens_db)
     token = await strategy.write_token(user)
     response = RedirectResponse(url="/profile", status_code=status.HTTP_302_FOUND)
