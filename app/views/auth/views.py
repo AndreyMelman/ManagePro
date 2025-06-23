@@ -8,8 +8,8 @@ from fastapi import (
     HTTPException,
 )
 from fastapi.responses import RedirectResponse
-from app.core.schemas.user import UserCreate
-from app.api.dependencies.authentication import (
+from core.schemas.user import UserCreate, UserUpdate
+from api.dependencies.authentication import (
     get_user_manager,
     authentication_backend,
     get_access_tokens_db,
@@ -206,3 +206,67 @@ async def profile(
         "auth/profile.html",
         {"request": request, "user": user},
     )
+
+
+@router.get("/profile/edit")
+async def edit_profile_get(
+    request: Request,
+    user=Depends(get_current_user_from_cookie),
+):
+    return templates.TemplateResponse(
+        "auth/edit_profile.html",
+        {"request": request, "user": user},
+    )
+
+
+@router.post("/profile/edit")
+async def edit_profile_post(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(None),
+    password_confirm: str = Form(None),
+    user_manager: UserManager = Depends(get_user_manager),
+    user=Depends(get_current_user_from_cookie),
+    access_tokens_db: AccessToken = Depends(get_access_tokens_db),
+):
+    errors = []
+    # Проверка email
+    if email != user.email:
+        try:
+            existing = await user_manager.get_by_email(email)
+            if existing:
+                errors.append("Пользователь с таким email уже существует")
+        except UserNotExists:
+            pass
+    # Проверка пароля
+    if password:
+        if password != password_confirm:
+            errors.append("Пароли не совпадают")
+    if errors:
+        return templates.TemplateResponse(
+            "auth/edit_profile.html",
+            {"request": request, "user": user, "errors": errors, "email": email},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+    # Обновление пользователя
+    update_data = {}
+    if email != user.email:
+        update_data["email"] = email
+    if password:
+        password_helper = PasswordHelper()
+        update_data["password"] = password_helper.hash(password)
+    if update_data:
+        user_update = UserUpdate(**update_data)
+        await user_manager.update(user_update, user)
+    # Обновим токен, если email изменился
+    strategy = authentication_backend.get_strategy(access_tokens_db)
+    token = await strategy.write_token(user)
+    response = RedirectResponse(url="/profile", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        max_age=60 * 60 * 24,
+        path="/",
+    )
+    return response
