@@ -20,11 +20,13 @@ def include_routers():
     from .teams.views import router as teams_router
     from .tasks.views import router as tasks_router
     from .task_comments.views import router as task_comments_router
+    from .meetings.views import router as meetings_router
 
     router.include_router(auth_router)
     router.include_router(teams_router)
     router.include_router(tasks_router)
     router.include_router(task_comments_router)
+    router.include_router(meetings_router)
 
 
 include_routers()
