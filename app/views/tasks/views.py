@@ -1,12 +1,21 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Request, Form, Depends, status, HTTPException
+from fastapi import (
+    APIRouter,
+    Request,
+    Form,
+    Depends,
+    status,
+    HTTPException,
+)
 from fastapi.responses import RedirectResponse
-from sqlalchemy import select
 
 from core.models import User
 from utils.templates import templates
-from api.dependencies.params import TaskServiceDep, TaskCommentServiceDep
+from api.dependencies.params import (
+    TaskServiceDep,
+    TaskCommentServiceDep,
+)
 from app.views.auth.views import get_current_user_from_cookie
 from core.schemas.task import TaskCreateShema
 
