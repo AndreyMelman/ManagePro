@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Профиль - ManagePro{% endblock %}
 {% block body %}
-<!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-bold" href="/">
@@ -31,6 +30,12 @@
           <a class="nav-link" href="/tasks">
             <i class="bi bi-list-task me-1"></i>
             Задачи
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/meetings">
+            <i class="bi bi-calendar-event me-1"></i>
+            Встречи
           </a>
         </li>
         <li class="nav-item">
@@ -67,10 +72,8 @@
   </div>
 </nav>
 
-<!-- Main Content -->
 <div class="container py-5">
   <div class="row">
-    <!-- Profile Card -->
     <div class="col-lg-8 mx-auto">
       <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
@@ -163,7 +166,6 @@
     </div>
   </div>
 
-  <!-- Quick Stats -->
   <div class="row mt-5">
     <div class="col-12">
       <h5 class="mb-4">
