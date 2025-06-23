@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>Мои оценки</h2>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Задача</th>
+                <th>Оценка</th>
+                <th>Комментарий</th>
+                <th>Оценщик</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evaluation in evaluations %}
+            <tr>
+                <td>{{ evaluation.task.title if evaluation.task else '-' }}</td>
+                <td>{{ evaluation.score }}</td>
+                <td>{{ evaluation.comment or '' }}</td>
+                <td>{{ evaluation.evaluator.email if evaluation.evaluator else '-' }}</td>
+                <td>{{ evaluation.created_at.strftime('%d.%m.%Y') if evaluation.created_at else '' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Оценок пока нет</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
