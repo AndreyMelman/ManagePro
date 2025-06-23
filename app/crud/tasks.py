@@ -14,6 +14,15 @@ class TaskService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_tasks(
+        self,
+        user: User,
+    ) -> list[Task]:
+        stmt = select(Task).where(Task.team_id == user.team_id)
+        result = await self.session.execute(stmt)
+        tasks = result.scalars().all()
+        return list(tasks)
+
     async def get_task(
         self,
         user: User,

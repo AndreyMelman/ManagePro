@@ -34,6 +34,14 @@ from api.docs.tasks import (
 router = APIRouter(tags=[TASK_TAG])
 
 
+@router.get("", response_model=list[TaskSchema])
+async def tasks_get(
+    crud: TaskServiceDep,
+    user: CurrentActiveUser,
+):
+    return await crud.get_tasks(user=user)
+
+
 @router.get(
     "/{task_id}",
     **GET_TASK,
