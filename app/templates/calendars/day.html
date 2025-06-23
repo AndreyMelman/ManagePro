@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>События за {{ day_date }}</h2>
+    <a href="/calendar" class="btn btn-secondary mb-3">Назад к календарю</a>
+    {% if not day_view or not day_view.events %}
+    <div class="alert alert-info">Нет событий на этот день.</div>
+    {% else %}
+    <ul class="list-group">
+        {% for event in day_view.events %}
+        <li class="list-group-item">
+            {% if event.event_type == 'task' %}
+            <span class="badge bg-primary">Задача</span>
+            {% else %}
+            <span class="badge bg-success">Встреча</span>
+            {% endif %}
+            <b>{{ event.title }}</b><br>
+            <span class="text-muted small">{{ event.start_datetime.strftime('%H:%M') }}{% if event.end_datetime %} - {{
+                event.end_datetime.strftime('%H:%M') }}{% endif %}</span>
+            <div>{{ event.description }}</div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock %}
