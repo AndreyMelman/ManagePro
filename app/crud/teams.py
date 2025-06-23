@@ -25,8 +25,7 @@ class TeamService:
     ) -> Team:
         stmt = select(Team).where(
             Team.id == team_id,
-            Team.admin_id == user.id,
-        )
+        ).options(selectinload(Team.users))
         result: Result = await self.session.execute(stmt)
         team = result.scalars().first()
         return team
