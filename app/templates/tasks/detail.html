@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ task.title }}</h2>
+    <p><b>Описание:</b> {{ task.description }}</p>
+    <p><b>Дедлайн:</b> {{ task.deadline }}</p>
+    <form method="post" action="/tasks/{{ task.id }}/delete" class="mb-3">
+        <button type="submit" class="btn btn-danger">Удалить задачу</button>
+        <a href="/tasks" class="btn btn-secondary">Назад</a>
+    </form>
+    <hr>
+    <h4>Комментарии</h4>
+    <form method="post" action="/tasks/{{ task.id }}/comments/add" class="mb-3">
+        <div class="mb-3">
+            <textarea class="form-control" name="text" rows="2" placeholder="Добавить комментарий..."
+                required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+    <ul class="list-group">
+        {% for comment in comments %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <b>{{ comment.user.email }}</b> <span class="text-muted">{{ comment.created_at }}</span><br>
+                {{ comment.text }}
+            </div>
+            <form method="post" action="/tasks/{{ task.id }}/comments/{{ comment.id }}/delete" style="margin:0;">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+            </form>
+        </li>
+        {% else %}
+        <li class="list-group-item">Комментариев пока нет.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

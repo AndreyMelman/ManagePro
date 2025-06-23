@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>Задачи команды</h2>
+    <a href="/tasks/create" class="btn btn-primary mb-3">Создать задачу</a>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Дедлайн</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.deadline }}</td>
+                <td><a href="/tasks/{{ task.id }}" class="btn btn-sm btn-outline-info">Открыть</a></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">Нет задач</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
