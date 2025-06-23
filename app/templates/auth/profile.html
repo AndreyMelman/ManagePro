@@ -1,12 +1,216 @@
 {% extends "base.html" %}
-{% block title %}
-  Profile
-{% endblock %}
+{% block title %}Профиль - ManagePro{% endblock %}
 {% block body %}
-<h2>Профиль</h2>
-<p><strong>Email:</strong> {{ user.email }}</p>
-<p><strong>Роль:</strong> {{ user.role }}</p>
-<form action="/logout" method="get">
-    <button type="submit">Выйти</button>
-</form>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/">
+      <i class="bi bi-rocket-takeoff me-2"></i>
+      ManagePro
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="/profile">
+            <i class="bi bi-person-circle me-1"></i>
+            Профиль
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/team">
+            <i class="bi bi-people me-1"></i>
+            Команды
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-list-task me-1"></i>
+            Задачи
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="bi bi-calendar-event me-1"></i>
+            Календарь
+          </a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle me-1"></i>
+            {{ user.email }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/profile">
+                <i class="bi bi-person me-2"></i>Профиль
+              </a></li>
+            <li><a class="dropdown-item" href="#">
+                <i class="bi bi-gear me-2"></i>Настройки
+              </a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item text-danger" href="/logout">
+                <i class="bi bi-box-arrow-right me-2"></i>Выйти
+              </a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container py-5">
+  <div class="row">
+    <!-- Profile Card -->
+    <div class="col-lg-8 mx-auto">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-person-circle me-2"></i>
+            Профиль пользователя
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-md-4 text-center mb-4">
+              <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style="width: 120px; height: 120px;">
+                <i class="bi bi-person-fill text-muted" style="font-size: 3rem;"></i>
+              </div>
+              <h5 class="mb-1">{{ user.email }}</h5>
+              <span class="badge bg-primary">{{ user.role }}</span>
+            </div>
+
+            <div class="col-md-8">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-medium text-muted">
+                    <i class="bi bi-envelope me-1"></i>Email
+                  </label>
+                  <p class="form-control-plaintext">{{ user.email }}</p>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-medium text-muted">
+                    <i class="bi bi-shield-check me-1"></i>Роль
+                  </label>
+                  <p class="form-control-plaintext">
+                    <span class="badge bg-primary">{{ user.role }}</span>
+                  </p>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-medium text-muted">
+                    <i class="bi bi-calendar me-1"></i>Дата регистрации
+                  </label>
+                  <p class="form-control-plaintext">
+                    {% if user.created_at %}
+                    {{ user.created_at.strftime('%d.%m.%Y') }}
+                    {% else %}
+                    <span class="text-muted">Не указана</span>
+                    {% endif %}
+                  </p>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-medium text-muted">
+                    <i class="bi bi-check-circle me-1"></i>Статус
+                  </label>
+                  <p class="form-control-plaintext">
+                    {% if user.is_active %}
+                    <span class="badge bg-success">Активен</span>
+                    {% else %}
+                    <span class="badge bg-danger">Неактивен</span>
+                    {% endif %}
+                  </p>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-medium text-muted">
+                    <i class="bi bi-people me-1"></i>Команда
+                  </label>
+                  <p class="form-control-plaintext">
+                    <span class="text-muted">Не назначен</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer bg-light">
+          <div class="d-flex gap-2 justify-content-end">
+            <a href="/profile/edit" class="btn btn-outline-primary">
+              <i class="bi bi-pencil me-1"></i>
+              Редактировать
+            </a>
+            <a href="/logout" class="btn btn-outline-danger">
+              <i class="bi bi-box-arrow-right me-1"></i>
+              Выйти
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <h5 class="mb-4">
+        <i class="bi bi-graph-up me-2"></i>
+        Краткая статистика
+      </h5>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-list-task text-primary mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-1">0</h4>
+          <p class="text-muted mb-0">Мои задачи</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-people text-success mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-1">0</h4>
+          <p class="text-muted mb-0">Участники команды</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-star text-warning mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-1">0</h4>
+          <p class="text-muted mb-0">Полученные оценки</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="bi bi-calendar-event text-info mb-2" style="font-size: 2rem;"></i>
+          <h4 class="mb-1">0</h4>
+          <p class="text-muted mb-0">Предстоящие встречи</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
