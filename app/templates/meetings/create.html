@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>Создать встречу</h2>
+    <form method="post">
+        <div class="mb-3">
+            <label for="title" class="form-label">Название</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Описание</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="start_datetime" class="form-label">Начало</label>
+            <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime" required>
+        </div>
+        <div class="mb-3">
+            <label for="end_datetime" class="form-label">Окончание</label>
+            <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Участники</label>
+            <select class="form-select" name="participants" multiple required>
+                {% for member in team_users %}
+                <option value="{{ member.id }}">{{ member.email }}</option>
+                {% endfor %}
+            </select>
+            <div class="form-text">Зажмите Ctrl (или Cmd), чтобы выбрать несколько участников</div>
+        </div>
+        <button type="submit" class="btn btn-success">Создать</button>
+        <a href="/meetings" class="btn btn-secondary">Назад</a>
+    </form>
+</div>
+{% endblock %}

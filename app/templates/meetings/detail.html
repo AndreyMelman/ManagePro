@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>{{ meeting.title }}</h2>
+    <p><b>Описание:</b> {{ meeting.description }}</p>
+    <p><b>Начало:</b> {{ meeting.start_datetime }}</p>
+    <p><b>Окончание:</b> {{ meeting.end_datetime }}</p>
+    <form method="post" action="/meetings/{{ meeting.id }}/cancel" class="mb-3">
+        <button type="submit" class="btn btn-danger">Отменить встречу</button>
+        <a href="/meetings" class="btn btn-secondary">Назад</a>
+    </form>
+    <hr>
+    <h4>Участники</h4>
+    <ul class="list-group">
+        {% for participant in meeting.participants %}
+        <li class="list-group-item">
+            {{ participant.user.email }}
+        </li>
+        {% else %}
+        <li class="list-group-item">Нет участников.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

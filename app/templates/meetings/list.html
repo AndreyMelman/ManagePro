@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-4">
+    <h2>Встречи</h2>
+    <a href="/meetings/create" class="btn btn-primary mb-3">Создать встречу</a>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Начало</th>
+                <th>Окончание</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for meeting in meetings %}
+            <tr>
+                <td>{{ meeting.title }}</td>
+                <td>{{ meeting.description }}</td>
+                <td>{{ meeting.start_datetime }}</td>
+                <td>{{ meeting.end_datetime }}</td>
+                <td><a href="/meetings/{{ meeting.id }}" class="btn btn-sm btn-outline-info">Открыть</a></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Нет встреч</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
