@@ -7,6 +7,7 @@ from sqlalchemy import (
     and_,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from core.models import (
     Meeting,
@@ -63,6 +64,8 @@ class MeetingService:
         stmt = select(Meeting).where(
             Meeting.id == meeting_id,
             Meeting.organizer_id == user.id,
+        ).options(
+            selectinload(Meeting.participants).selectinload(MeetingParticipant.user)
         )
         result = await self.session.execute(stmt)
         meeting = result.scalars().first()
@@ -80,6 +83,9 @@ class MeetingService:
             select(Meeting)
             .join(MeetingParticipant)
             .where(MeetingParticipant.user_id == user.id)
+            .options(
+                selectinload(Meeting.participants).selectinload(MeetingParticipant.user)
+            )
         )
 
         if not include_cancelled:
