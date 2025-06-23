@@ -25,6 +25,9 @@
 </head>
 
 <body>
+  {% if request.url.path not in ['/', '/login', '/register'] %}
+  {% include "navbar.html" %}
+  {% endif %}
   {% block body %}{% endblock %}
 
   <!-- Bootstrap JS -->
